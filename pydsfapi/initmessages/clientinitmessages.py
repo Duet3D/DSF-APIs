@@ -1,0 +1,70 @@
+"""
+clientinitmessages holds all messages a client can send to the server to initiate a connection
+
+    Python interface to DuetSoftwareFramework
+    Copyright (C) 2020 Duet3D
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+"""
+from enum import Enum
+
+
+class ConnectionMode(str, Enum):
+    """Supported connection types for client connections"""
+    UNKNOWN = 'Unknown'
+    COMMAND = 'Command'
+    INTERCEPT = 'Intercept'
+    SUBSCRIBE = 'Subscribe'
+
+
+class ClientInitMessage:
+    """
+    An instance of this class is sent from the client to the server as a response
+    to the ServerInitMessage. It allows a client to select the connection mode.
+    """
+    def __init__(self, mode: ConnectionMode = ConnectionMode.UNKNOWN, **kwargs):
+        self.mode = mode
+        for key, value in kwargs.items():
+            self.__dict__[key] = value
+
+
+class InterceptionMode(str, Enum):
+    """Type of the intercepting connection"""
+    PRE = 'Pre'
+    POST = 'Post'
+    EXECUTED = 'Executed'
+
+
+def intercept_init_message(intercept_mode: InterceptionMode):
+    """Enter interception mode"""
+    return ClientInitMessage(ConnectionMode.INTERCEPT, **{'InterceptionMode': intercept_mode})
+
+
+def command_init_message():
+    """Enter command-based connection mode"""
+    return ClientInitMessage(ConnectionMode.COMMAND)
+
+
+class SubscriptionMode(str, Enum):
+    """Type of the model subscription"""
+    FULL = 'Full'
+    PATCH = 'Patch'
+
+
+def subscibe_init_message(subscription_mode: SubscriptionMode, filter_string: str):
+    """Enter subscription mode"""
+    return ClientInitMessage(ConnectionMode.SUBSCRIBE, **{
+        'SubscriptionMode': subscription_mode,
+        'Filter': filter_string
+    })
