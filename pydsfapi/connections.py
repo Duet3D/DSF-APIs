@@ -118,14 +118,14 @@ class HttpEndpointConnection:
         """Receive a JSON object"""
         json_string = (await self.reader.read(32 * 1024)).decode('utf8')
         if self.debug:
-            print(f'recv: {json_string}')
+            print('recv: {0}'.format(json_string))
         return json_string
 
     async def send(self, obj):
         """Send an arbitrary object"""
         json_string = json.dumps(obj, default=lambda o: o.__dict__)
         if self.debug:
-            print(f'send: {json_string}')
+            print('send: {0}'.format(json_string))
         self.writer.write(json_string.encode('utf8'))
         await self.writer.drain()
 
@@ -225,16 +225,15 @@ class BaseConnection:
             json.loads(self.socket.recv(50).decode('utf8')))
         if not server_init_message.is_compatible():
             raise serverinitmessage.IncompatibleVersionException(
-                (f'Incompatible API version '
-                 f'(need {server_init_message.EXPECTED_SERVER_VERSION}, '
-                 f'got {server_init_message.version})'))
+                'Incompatible API version (need {0}, got {1})'.format(
+                    server_init_message.EXPECTED_SERVER_VERSION, server_init_message.version))
         self.id = server_init_message.id
         self.send(init_message)
 
         response = self.receive_response()
         if not response.success:
-            raise Exception((f'Could not set connection type {init_message.mode} '
-                             f'({response.error_type}: {response.error_message})'))
+            raise Exception('Could not set connection type {0} ({1}: {2})'.format(
+                init_message.mode, response.error_type, response.error_message))
 
     def close(self):
         """Closes the current connection and disposes it"""
@@ -261,7 +260,7 @@ class BaseConnection:
         """Serialize an arbitrary object into JSON and send it to the server plus NL"""
         json_string = json.dumps(msg, default=lambda o: o.__dict__)
         if self.debug:
-            print(f'send: {json_string}')
+            print('send: {0}'.format(json_string))
         self.socket.sendall(json_string.encode('utf8'))
 
     def receive(self, cls):
@@ -278,7 +277,7 @@ class BaseConnection:
         """Receive the JSON response from the server"""
         json_string = self.socket.recv(32 * 1024).decode('utf8')
         if self.debug:
-            print(f'recv: {json_string}')
+            print('recv: {0}'.format(json_string))
         return json_string
 
 

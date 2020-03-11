@@ -100,7 +100,8 @@ class CodeParameter(json.JSONEncoder):
                 driver = (int(segments[0]) << 16) & 0xFFFF
                 driver |= (int(segments[1] & 0xFFFF))
             else:
-                raise CodeParserException(f'Driver value from {self.letter} parameter is invalid')
+                raise CodeParserException('Driver value from {0} parameter is invalid'.format(
+                    self.letter))
 
         if len(drivers) == 1:
             self.__parsed_value = drivers[0]
@@ -115,16 +116,16 @@ class CodeParameter(json.JSONEncoder):
         if isinstance(self.__parsed_value, int):
             return float(self.__parsed_value)
 
-        raise Exception(
-            f'Cannot convert {self.letter} parameter to float (value {self.string_value})')
+        raise Exception('Cannot convert {0} parameter to float (value {1})'.format(
+            self.letter, self.string_value))
 
     def as_int(self):
         """Conversion to int"""
         if isinstance(self.__parsed_value, int):
             return self.__parsed_value
 
-        raise Exception(
-            f'Cannot convert {self.letter} parameter to int (value {self.string_value})')
+        raise Exception('Cannot convert {0} parameter to int (value {1})'.format(
+            self.letter, self.string_value))
 
     def as_float_array(self):
         """Conversion to float array"""
@@ -137,8 +138,8 @@ class CodeParameter(json.JSONEncoder):
                 return [float(self.__parsed_value)]
         except:
             pass
-        raise Exception(
-            f'Cannot convert {self.letter} parameter to float array (value {self.string_value})')
+        raise Exception('Cannot convert {0} parameter to float array (value {1})'.format(
+            self.letter, self.string_value))
 
     def as_int_array(self):
         """Conversion to int array"""
@@ -149,8 +150,8 @@ class CodeParameter(json.JSONEncoder):
                 return [float(self.__parsed_value)]
         except:
             pass
-        raise Exception(
-            f'Cannot convert {self.letter} parameter to float array (value {self.string_value})')
+        raise Exception('Cannot convert {0} parameter to float array (value {1})'.format(
+            self.letter, self.string_value))
 
     def as_bool(self):
         """Conversion to bool"""
@@ -172,6 +173,6 @@ class CodeParameter(json.JSONEncoder):
     def __str__(self):
         if self.is_string:
             double_quoted = self.string_value.replace('"', '""')
-            return f'{self.letter}"{double_quoted}"'
+            return '{0}"{1}"'.format(self.letter, double_quoted)
 
-        return f'{self.letter}{self.string_value}'
+        return '{0}{1}'.format(self.letter, self.string_value)

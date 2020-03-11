@@ -90,27 +90,27 @@ class Code(BaseCommand):
         str_list = []
         for param in self.parameters:
             if quote and param.is_string:
-                str_list.append(f'{param.letter}"{param.string_value}"')
+                str_list.append('{0}"{1}"'.format(param.letter, param.string_value))
             else:
-                str_list.append(f'{param.letter}{param.string_value}')
+                str_list.append('{0}{1}'.format(param.letter, param.string_value))
         return ' '.join(str_list)
 
     def __str__(self):
         """Convert the parsed code back to a text-based G/M/T-code"""
         if self.type == CodeType.Comment:
-            return f';{self.comment}'
+            return ';{0}'.format(self.comment)
 
         str_list = []
         str_list.append(self.short_str())
 
         for param in self.parameters:
-            str_list.append(f' {param}')
+            str_list.append(' {0}'.format(param))
 
         if self.comment:
-            str_list.append(f' ;{self.comment}')
+            str_list.append(' ;{0}'.format(self.comment))
 
         if len(self.result) > 0:
-            str_list.append(f' => {self.result}')
+            str_list.append(' => {0}'.format(self.result))
 
         return ''.join(str_list)
 
@@ -121,8 +121,8 @@ class Code(BaseCommand):
 
         if self.majorNumber is not None:
             if self.minorNumber is not None:
-                return f'{self.type}{self.majorNumber}.{self.minorNumber}'
+                return '{0}{1}.{2}'.format(self.type, self.majorNumber, self.minorNumber)
 
-            return f'{self.type}{self.majorNumber}'
+            return '{0}{1}'.format(self.type, self.majorNumber)
 
-        return f'{self.type}'
+        return self.type
