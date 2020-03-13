@@ -1,6 +1,6 @@
 # Duet Software Framework APIs
 
-Repository to collect APIs implementations for (https://github.com/chrishamm/DuetSoftwareFramework| Duet Software Framework) (in languages other than DSF which uses C#)
+Repository to collect APIs implementations for [Duet Software Framework](https://github.com/chrishamm/DuetSoftwareFramework) (in languages other than DSF which uses C#)
 
 Licenses will be included in the individual API implementation sub directories
 
