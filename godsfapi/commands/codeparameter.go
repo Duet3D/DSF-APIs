@@ -270,6 +270,7 @@ func (cp *CodeParameter) init(letter, value string, isString bool) error {
 		cp.parsedValue = 0
 	} else if strings.HasPrefix(value, "{") && strings.HasSuffix(value, "}") {
 		cp.IsExpression = true
+		cp.parsedValue = value
 	} else if strings.Contains(value, ":") {
 		cp.parseListValue(value)
 	} else if i, err := strconv.ParseInt(value, 10, 64); err == nil {

@@ -27,10 +27,11 @@ class CodeChannel(IntEnum):
     File = 2
     USB = 3
     AUX = 4
-    Daemon = 5
+    Trigger = 5
     CodeQueue = 6
     LCD = 7
     SPI = 8
-    AutoPause = 9
+    Daemon = 9
+    AutoPause = 10
 
     DEFAULT_CHANNEL = SPI

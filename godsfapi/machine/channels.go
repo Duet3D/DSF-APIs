@@ -16,14 +16,16 @@ type Channels struct {
 	USB Channel
 	// AUX is the G/M/T-code channel for serial devices (e.g. UART, PanelDue)
 	AUX Channel
-	// Daemon is the G/M/T-code channel to deal with triggers and config.g
-	Daemon Channel
+	// Trigger is the G/M/T-code channel to deal with triggers and config.g
+	Trigger Channel
 	// CodeQueue is the G/M/T-code channel for the code queue
 	CodeQueue Channel
 	// LCD is the G/M/T-code channel for auxiliary LCD devices
 	LCD Channel
 	// SPI is the G/M/T-code channel for generic codes via SPI
 	SPI Channel
+	// Daemon is the code channel that executes the daemon process
+	Daemon Channel
 	// AutoPause is the G/M/T-code channel for auto pause events
 	AutoPause Channel
 }
@@ -50,14 +52,16 @@ func (ch *Channels) Get(cc types.CodeChannel) Channel {
 		return ch.USB
 	case types.AUX:
 		return ch.AUX
-	case types.Daemon:
-		return ch.Daemon
+	case types.Trigger:
+		return ch.Trigger
 	case types.CodeQueue:
 		return ch.CodeQueue
 	case types.LCD:
 		return ch.LCD
 	case types.SPI:
 		return ch.SPI
+	case types.Daemon:
+		return ch.Daemon
 	case types.AutoPause:
 		return ch.AutoPause
 	default:

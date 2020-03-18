@@ -15,7 +15,7 @@ const (
 	// AUX is the code channel of serial devices except USB (e.g. PanelDue)
 	AUX
 	// Daemon is the code channel for running triggers or config.g
-	Daemon
+	Trigger
 	// CodeQueue is the code channel for the code queue that executes a couple of
 	// codes in-sync with moves
 	CodeQueue
@@ -23,6 +23,8 @@ const (
 	LCD
 	// SPI is the default code channel for requests of SPI
 	SPI
+	// Daemon is the code channel that executes the daemon process
+	Daemon
 	// AutoPause is the code channel that executes macros on power fail,
 	// heater faults and filament out
 	AutoPause

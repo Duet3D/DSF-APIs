@@ -66,6 +66,7 @@ class CodeParameter(json.JSONEncoder):
             self.__parsed_value = 0
         elif value.startswith('{}') and value.endswith('}'):  # It is an expression
             self.is_expression = True
+            self.__parsed_value = value
         elif ':' in value:  # It is an array (or a string)
             split = value.split(':')
             try:
