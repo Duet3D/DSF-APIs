@@ -40,6 +40,7 @@ class TaskCanceledException(Exception):
 
 class InternalServerException(Exception):
     """Exception returned by the server for an arbitrary problem"""
+
     def __init__(self, command, error_type: str, error_message: str):
         super().__init__('Internal Server Exception')
         self.command = command
@@ -72,6 +73,7 @@ class ReceivedHttpRequest:
 
 class HttpEndpointConnection:
     """Connection class for dealing with requests received from a custom HTTP endpoint"""
+
     def __init__(self, reader, writer, is_websocket: bool, debug: bool = False):
         """Constructor for a new connection dealing with a single HTTP endpoint request"""
         self.reader = reader
@@ -132,6 +134,7 @@ class HttpEndpointConnection:
 
 class HttpEndpointUnixSocket:
     """Class for dealing with custom HTTP endpoints"""
+
     def __init__(self,
                  endpoint_type: basecommands.HttpEndpointType,
                  namespace: str,
@@ -163,7 +166,8 @@ class HttpEndpointUnixSocket:
     def close(self):
         """Close the socket connection"""
         if self._loop is not None:
-            self._loop.set_debug(True)  # TODO: this enables correctly ending the loop. Why?
+            # TODO: this enables correctly ending the loop. Why?
+            self._loop.set_debug(True)
             self._server.close()
             self._loop.stop()
         self.event_loop.cancel()
@@ -210,6 +214,7 @@ class BaseConnection:
     Base class for connections that access the control server via the Duet API
     using a UNIX socket
     """
+
     def __init__(self, debug: bool = False):
         self.debug = debug
         self.socket = None
@@ -254,7 +259,8 @@ class BaseConnection:
         if response.error_type == 'TaskCanceledException':
             raise TaskCanceledException(response.error_message)
 
-        raise InternalServerException(command, response.error_type, response.error_message)
+        raise InternalServerException(
+            command, response.error_type, response.error_message)
 
     def send(self, msg):
         """Serialize an arbitrary object into JSON and send it to the server plus NL"""
@@ -283,7 +289,8 @@ class BaseConnection:
 
 class BaseCommandConnection(BaseConnection):
     """Base connection class for sending commands to the control server"""
-    def flush(self, channel: codechannel.CodeChannel = codechannel.CodeChannel.SPI):
+
+    def flush(self, channel: codechannel.CodeChannel = codechannel.CodeChannel.SBC):
         """Wait for all pending codes of the given channel to finish"""
         return self.perform_command(basecommands.flush(channel))
 
@@ -293,7 +300,8 @@ class BaseCommandConnection(BaseConnection):
                           path: str,
                           backlog: int = DEFAULT_BACKLOG):
         """Add a new third-party HTTP endpoint in the format /machine/{ns}/{path}"""
-        res = self.perform_command(basecommands.add_http_endpoint(endpoint_type, namespace, path))
+        res = self.perform_command(
+            basecommands.add_http_endpoint(endpoint_type, namespace, path))
         socket_path = res.result
         return HttpEndpointUnixSocket(endpoint_type, namespace, path, socket_path, backlog,
                                       self.debug)
@@ -307,7 +315,8 @@ class BaseCommandConnection(BaseConnection):
         if origin_port is None:
             origin_port = os.getpid()
 
-        res = self.perform_command(basecommands.add_user_session(access, tpe, origin, origin_port))
+        res = self.perform_command(basecommands.add_user_session(
+            access, tpe, origin, origin_port))
         return int(res.result)
 
     def get_file_info(self, file_name: str):
@@ -318,7 +327,8 @@ class BaseCommandConnection(BaseConnection):
 
     def get_machine_model(self):
         """Retrieve the full object model of the machine."""
-        res = self.perform_command(basecommands.GET_MACHINE_MODEL, machinemodel.MachineModel)
+        res = self.perform_command(
+            basecommands.GET_MACHINE_MODEL, machinemodel.MachineModel)
         return res.result
 
     def get_serialized_machine_model(self):
@@ -338,7 +348,7 @@ class BaseCommandConnection(BaseConnection):
         res = self.perform_command(cde, result.CodeResult)
         return res.result
 
-    def perform_simple_code(self, cde: str, channel: codechannel.CodeChannel):
+    def perform_simple_code(self, cde: str, channel: codechannel.CodeChannel = codechannel.CodeChannel.DEFAULT_CHANNEL):
         """Execute an arbitrary G/M/T-code in text form and return the result as a string"""
         res = self.perform_command(basecommands.simple_code(cde, channel))
         return res.result
@@ -352,7 +362,8 @@ class BaseCommandConnection(BaseConnection):
 
     def remove_user_session(self, session_id: int):
         """Remove an existing HTTP endpoint"""
-        res = self.perform_command(basecommands.remove_user_session(session_id))
+        res = self.perform_command(
+            basecommands.remove_user_session(session_id))
         return res.result
 
     def resolve_path(self, path: str):
@@ -377,6 +388,7 @@ class BaseCommandConnection(BaseConnection):
 
 class CommandConnection(BaseCommandConnection):
     """Connection class for sending commands to the control server"""
+
     def connect(self, socket_path: str = FULL_SOCKET_PATH):
         """Establishes a connection to the given UNIX socket file"""
         return super().connect(clientinitmessages.command_init_message(), socket_path)
@@ -384,6 +396,7 @@ class CommandConnection(BaseCommandConnection):
 
 class InterceptConnection(BaseCommandConnection):
     """Connection class for intercepting G/M/T-codes from the control server"""
+
     def __init__(self, interception_mode: clientinitmessages.InterceptionMode, debug: bool = False):
         super().__init__(debug)
         self.interception_mode = interception_mode
@@ -416,6 +429,7 @@ class InterceptConnection(BaseCommandConnection):
 
 class SubscribeConnection(BaseConnection):
     """Connection class for subscribing to model updates"""
+
     def __init__(self,
                  subscription_mode: clientinitmessages.SubscriptionMode,
                  filter_str: str = "",
@@ -426,7 +440,8 @@ class SubscribeConnection(BaseConnection):
 
     def connect(self, socket_path: str = FULL_SOCKET_PATH):
         """Establishes a connection to the given UNIX socket file"""
-        sim = clientinitmessages.subscibe_init_message(self.subscription_mode, self.filter_str)
+        sim = clientinitmessages.subscibe_init_message(
+            self.subscription_mode, self.filter_str)
 
         return super().connect(sim, socket_path)
 

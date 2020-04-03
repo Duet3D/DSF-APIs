@@ -24,10 +24,56 @@ class CodeParserException(Exception):
     """Raised if codes could not be parsed properly"""
 
 
+class DriverId:
+    """Class representing a driver identifier"""
+
+    def __init__(self, as_str: str = None, as_int: int = None, board: int = None, port: int = None):
+        if board is not None:
+            self.board = board
+        if port is not None:
+            self.port = port
+
+        if as_int is not None:
+            if as_int < 0:
+                raise Exception('DriverId as int must not be negative')
+            self.board = (as_int >> 16) & 0xFFFF
+            self.port = (as_int & 0xFFFF)
+            return
+
+        if as_str is not None:
+            segments = as_str.split('.')
+            segment_count = len(segments)
+            if segment_count == 1:
+                self.board = 0
+                self.port = int(segments[0])
+            elif segment_count == 2:
+                self.board = int(segments[0]) & 0xFFFF
+                self.port = int(segments[1]) & 0xFFFF
+            else:
+                raise CodeParserException('Failed to parse driver value')
+
+    def as_int(self):
+        return (self.board << 16) | self.port
+
+    def __str__(self):
+        return '{0}.{1}'.format(self.board, self.port)
+
+    def __eq__(self, o):
+        if self is None:
+            return o is None
+        if isinstance(o, DriverId):
+            return self.board == o.board and self.port == o.port
+        return False
+
+    def __ne__(self, o):
+        return not self == o
+
+
 class CodeParameter(json.JSONEncoder):
     """Represents a parsed parameter of a G/M/T-code"""
+
     def default(self, o):
-        return {'letter': o.letter, 'value': o.value, 'isString': isinstance(o.value, str)}
+        return {'letter': o.letter, 'value': o.value, 'isString': isinstance(o.value, str), 'isDriverId': o.is_driver_id}
 
     @classmethod
     def from_json(cls, data):
@@ -39,13 +85,14 @@ class CodeParameter(json.JSONEncoder):
         """Create a new simple parameter without parsing the value"""
         return cls(letter, value)
 
-    def __init__(self, letter: chr, value: str, isString: bool = None):
+    def __init__(self, letter: chr, value: str, isString: bool = None, isDriverId: bool = None):
         """
         Creates a new CodeParameter instance and parses value to a native data type
         if applicable
         """
 
-        if isString is None:
+        # This is the simple path to create a CodeParameter
+        if isString is None and isDriverId is None:
             self.letter = letter
             self.string_value = str(value)
             self.__parsed_value = value
@@ -55,9 +102,17 @@ class CodeParameter(json.JSONEncoder):
         self.string_value = value
         self.is_string = isString
         self.is_expression = False
-        self.is_driver_id = False
+        self.is_driver_id = isDriverId if isDriverId is not None else False
         if self.is_string:
             self.__parsed_value = value
+            return
+        elif self.is_driver_id:
+            drivers = [DriverId(as_str=value) for value in self_string_value.split(':')]
+
+            if len(drivers) == 1:
+                self.__parsed_value = drivers[0]
+            else:
+                self.__parsed_value = drivers
             return
 
         value = value.strip()
@@ -89,6 +144,15 @@ class CodeParameter(json.JSONEncoder):
         """Convert this parameter to driver id(s)"""
         if self.is_expression:
             return
+        try:
+            drivers = [DriverId(as_str=value) for value in self_string_value.split(':')]
+        except CodeParserException as e:
+            raise CodeParserException(e + ' from {0} parameter'.format(self.letter))
+
+        if len(drivers) == 1:
+            self.__parsed_value = drivers[0]
+        else:
+            self.__parsed_value = drivers
 
         drivers = []
         parameters = self.string_value.split(':')
@@ -124,9 +188,21 @@ class CodeParameter(json.JSONEncoder):
         """Conversion to int"""
         if isinstance(self.__parsed_value, int):
             return self.__parsed_value
+        if isinstance(self.__parsed_value, DriverId):
+            return self.__parsed_value.as_int()
 
         raise Exception('Cannot convert {0} parameter to int (value {1})'.format(
             self.letter, self.string_value))
+
+    def as_driver_id(self):
+        if isinstance(self.__parsed_value, DriverId):
+            return self.__parsed_value
+        if isinstance(self.__parsed_value, int):
+            try:
+                return DriverId(as_int=self.__parsed_value)
+            except:
+                pass
+        raise Exception('Cannot convert {0} parameter to DriverId (value {1})'.format(self.letter, self.string_value))
 
     def as_float_array(self):
         """Conversion to float array"""
@@ -146,12 +222,32 @@ class CodeParameter(json.JSONEncoder):
         """Conversion to int array"""
         try:
             if isinstance(self.__parsed_value, list):
+                if isinstance(self.__parsed_value[0], DriverId):
+                    return [d.as_int() for d in self.__parsed_value]
                 return list(map(int, self.__parsed_value))
             if isinstance(self.__parsed_value, int):
-                return [float(self.__parsed_value)]
+                return [self.__parsed_value]
+            if isinstance(self.__parsed_value, DriverId):
+                return [self.__parsed_value.as_int()]
         except:
             pass
         raise Exception('Cannot convert {0} parameter to float array (value {1})'.format(
+            self.letter, self.string_value))
+
+    def as_driver_id_array(self):
+        try:
+            if isinstance(self.__parsed_value, list):
+                if isinstance(self.__parsed_value[0], DriverId):
+                    return self.__parsed_value
+                if isinstance(self.__parsed_value[0], int):
+                    return list(map(DriverId, self.__parsed_value))
+            if isinstance(self.__parsed_value, DriverId):
+                return [self.__parsed_value]
+            if isinstance(self.__parsed_value, int):
+                return [DriverId(as_int=self.__parsed_value)]
+        except:
+            pass
+        raise Exception('Cannot convert {0} parameter to DriverId array (value {1})'.format(
             self.letter, self.string_value))
 
     def as_bool(self):

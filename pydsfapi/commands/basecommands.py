@@ -114,6 +114,15 @@ def remove_user_session(session_id: int):
     return BaseCommand('RemoveUserSession', **{'Id': session_id})
 
 
+def evaluate_expression(channel: CodeChannel, expression: str):
+    """
+    Evaluate an arbitrary expression on the given channel in RepRapFirmware.
+    Do not use this call to evaluate file-based and network-related fields because the
+    DSF and RRF models diverge in this regard.
+    """
+    return BaseCommand('EvaluateExpression', **{'Channel': channel, 'Expression': expression})
+
+
 def flush(channel: CodeChannel):
     """Create a Flush command"""
     return BaseCommand('Flush', **{'Channel': channel})

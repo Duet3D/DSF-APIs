@@ -60,6 +60,7 @@ class CodeFlags(IntEnum):
     EnforceAbsolutePosition = 128
     IsPrioritized = 256
     Unbuffered = 512
+    IsFromFirmware = 1024
 
 
 class Code(BaseCommand):
@@ -97,6 +98,20 @@ class Code(BaseCommand):
 
     def __str__(self):
         """Convert the parsed code back to a text-based G/M/T-code"""
+        if self.keyword != Keyword.KeywordNone:
+            return {
+                    Keyword.Abort: 'abort {0}'.format(self.keywordArgument),
+                    Keyword.Break: 'break',
+                    Keyword.Echo: 'echo {0}'.format(self.keywordArgument),
+                    Keyword.Else: 'else',
+                    Keyword.ElseIf: 'elif {0}'.format(self.keywordArgument),
+                    Keyword.If: 'if {0}'.format(self.keywordArgument),
+                    Keyword.Return: 'return {0}'.format(self.keywordArgument),
+                    Keyword.Set: 'set {0}'.format(self.keywordArgument),
+                    Keyword.Var: 'var {0}'.format(self.keywordArgument),
+                    Keyword.While: 'while {0}'.format(self.keywordArgument),
+            }.get(self.keyword)
+
         if self.type == CodeType.Comment:
             return ';{0}'.format(self.comment)
 
@@ -107,7 +122,9 @@ class Code(BaseCommand):
             str_list.append(' {0}'.format(param))
 
         if self.comment:
-            str_list.append(' ;{0}'.format(self.comment))
+            if len(str_list) > 0:
+                str_list.append(' ')
+            str_list.append(';{0}'.format(self.comment))
 
         if len(self.result) > 0:
             str_list.append(' => {0}'.format(self.result))

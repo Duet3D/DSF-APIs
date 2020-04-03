@@ -17,21 +17,22 @@ codechannel contains an enum with available code channels.
     You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-from enum import IntEnum
+from enum import Enum
 
 
-class CodeChannel(IntEnum):
+class CodeChannel(str, Enum):
     """Enumeration of every available code channel"""
-    HTTP = 0
-    Telnet = 1
-    File = 2
-    USB = 3
-    AUX = 4
-    Trigger = 5
-    CodeQueue = 6
-    LCD = 7
-    SPI = 8
-    Daemon = 9
-    AutoPause = 10
+    HTTP = "HTTP"
+    Telnet = "Telnet"
+    File = "File"
+    USB = "USB"
+    Aux = "Aux"
+    Trigger = "Trigger"
+    Queue = "Queue"
+    LCD = "LCD"
+    SBC = "SBC"
+    Daemon = "Daemon"
+    AutoPause = "AutoPause"
+    Unknown = "Unknown"
 
-    DEFAULT_CHANNEL = SPI
+    DEFAULT_CHANNEL = SBC
