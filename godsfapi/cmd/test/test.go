@@ -42,7 +42,7 @@ func command(code string) {
 	}
 	defer cc.Close()
 	if code != "" {
-		r, err := cc.PerformSimpleCode(code, types.SPI)
+		r, err := cc.PerformSimpleCode(code, types.SBC)
 		if err != nil {
 			log.Panic(err)
 		}

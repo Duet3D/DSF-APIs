@@ -70,6 +70,8 @@ const (
 	// Unbuffered will execute this code circumventing any buffers
 	// Do NOT process another code on the same channel before this code has been fully executed
 	Unbuffered
+	// IsFromFirmware indicates if this code was requested by the firmware
+	IsFromFirmware
 	// Placeholder to indicate that no flags are set
 	CodeFlagsNone = 0
 )
@@ -233,6 +235,32 @@ func (c *Code) GetUnprecedentedString(quote bool) string {
 
 // String will convert the parsed code back to a text-based G/M/T-code
 func (c Code) String() string {
+	if c.Keyword != KeywordTypeNone {
+		switch c.Keyword {
+		case Abort:
+			return "abort " + c.KeywordArgument
+		case Break:
+			return "break"
+		case Echo:
+			return "echo " + c.KeywordArgument
+		case Else:
+			return "else"
+		case ElseIf:
+			return "elif " + c.KeywordArgument
+		case If:
+			return "if " + c.KeywordArgument
+		case Return:
+			return "return " + c.KeywordArgument
+		case Set:
+			return "set " + c.KeywordArgument
+		case Var:
+			return "var " + c.KeywordArgument
+		case While:
+			return "while " + c.KeywordArgument
+		default:
+			return "Error: Not implemented"
+		}
+	}
 	if c.Type == types.Comment {
 		return ";" + c.Comment
 	}
@@ -245,7 +273,10 @@ func (c Code) String() string {
 	}
 
 	if c.Comment != "" {
-		b.WriteString(" ;")
+		if b.Len() > 0 {
+			b.WriteString(" ")
+		}
+		b.WriteString(";")
 		b.WriteString(c.Comment)
 	}
 

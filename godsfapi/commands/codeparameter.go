@@ -7,6 +7,8 @@ import (
 	"math"
 	"strconv"
 	"strings"
+
+	"github.com/Duet3D/DSF-APIs/godsfapi/types"
 )
 
 var ErrMissingParameter = errors.New("Parameter not found")
@@ -25,6 +27,13 @@ type CodeParameter struct {
 	IsString bool
 	// parsedValue is the internal parsed representation of the string value
 	parsedValue interface{}
+}
+
+// NewCodeParameter creates a new CodeParameter instance and parses value to a native data type if applicable
+func NewCodeParameter(letter, value string, isString, isDriverId bool) (*CodeParameter, error) {
+	cp := &CodeParameter{}
+	err := cp.init(letter, value, isString, isDriverId)
+	return cp, err
 }
 
 // NewSimpleCodeParameter instantiates a CodeParameter for the given letter and value
@@ -58,43 +67,21 @@ func (cp *CodeParameter) ConvertDriverIds() error {
 		return nil
 	}
 
-	d := make([]uint64, 0)
+	drivers := make([]types.DriverId, 0)
 
 	// Split on the list-separator
-	params := strings.Split(cp.stringValue, ":")
-	for _, p := range params {
-		// Split on the board-driver-separator
-		s := strings.Split(p, ".")
-
-		// It was just one value
-		if len(s) == 1 {
-			u, err := strconv.ParseUint(s[0], 10, 64)
-			if err != nil {
-				return errors.New(fmt.Sprintf("Failed to parse driver number from %s parameter", cp.Letter))
-			}
-			d = append(d, u)
-
-			// board id was also given
-		} else if len(s) == 2 {
-			board, err := strconv.ParseUint(s[0], 10, 64)
-			if err != nil {
-				return errors.New(fmt.Sprintf("Failed to parse board number from %s parameter", cp.Letter))
-			}
-			port, err := strconv.ParseUint(s[1], 10, 64)
-			if err != nil {
-				return errors.New(fmt.Sprintf("Failed to parse driver number from %s parameter", cp.Letter))
-			}
-			driver := (board << 16) | port
-			d = append(d, driver)
-		} else {
-			return errors.New(fmt.Sprintf("Driver value from %s parameter is invalid.", cp.Letter))
+	for _, p := range strings.Split(cp.stringValue, ":") {
+		d, err := types.NewDriverIdString(p)
+		if err != nil {
+			return errors.New(fmt.Sprintf("%s from %s parameter", err.Error(), cp.Letter))
 		}
+		drivers = append(drivers, d)
 	}
 
-	if len(d) == 1 {
-		cp.parsedValue = d[0]
+	if len(drivers) == 1 {
+		cp.parsedValue = drivers[0]
 	} else {
-		cp.parsedValue = d
+		cp.parsedValue = drivers
 	}
 	cp.IsDriverId = true
 
@@ -146,8 +133,23 @@ func (cp *CodeParameter) AsUint64() (uint64, error) {
 		if v >= 0 {
 			return uint64(v), nil
 		}
+	case types.DriverId:
+		return v.AsUint64(), nil
 	}
 	return 0, errors.New(fmt.Sprintf("Cannot convert %s parameter to uint64 (value %s of type %T)", cp.Letter, cp.stringValue, cp.parsedValue))
+}
+
+func (cp *CodeParameter) AsDriverId() (types.DriverId, error) {
+	if cp == nil {
+		return types.DriverId{}, ErrMissingParameter
+	}
+	switch v := cp.parsedValue.(type) {
+	case types.DriverId:
+		return v, nil
+	case uint64:
+		return types.NewDriverIdUint64(v), nil
+	}
+	return types.DriverId{}, errors.New(fmt.Sprintf("Cannot convert %s parameter to driver ID (value %s)", cp.Letter, cp.stringValue))
 }
 
 // AsBool returns the value as bool as returned by strconv.ParseBool()
@@ -251,26 +253,57 @@ func (cp *CodeParameter) AsUint64Slice() ([]uint64, error) {
 			fs = append(fs, uint64(i))
 		}
 		return fs, nil
+	case []types.DriverId:
+		fs := make([]uint64, 0, len(v))
+		for _, i := range v {
+			fs = append(fs, i.AsUint64())
+		}
+		return fs, nil
+	case types.DriverId:
+		return []uint64{v.AsUint64()}, nil
 	}
 
 	return nil, errors.New(fmt.Sprintf("Cannot convert %s parameter to []uint64 (value %s of type %T)", cp.Letter, cp.stringValue, cp.parsedValue))
 }
 
+func (cp *CodeParameter) AsDriverIdSlice() ([]types.DriverId, error) {
+	if cp == nil {
+		return nil, ErrMissingParameter
+	}
+	switch v := cp.parsedValue.(type) {
+	case []types.DriverId:
+		return v, nil
+	case types.DriverId:
+		return []types.DriverId{v}, nil
+	case uint64:
+		return []types.DriverId{types.NewDriverIdUint64(v)}, nil
+	case []uint64:
+		s := make([]types.DriverId, 0, len(v))
+		for _, u := range v {
+			s = append(s, types.NewDriverIdUint64(u))
+		}
+		return s, nil
+	}
+	return nil, errors.New(fmt.Sprintf("Cannot convert %s parameter to []types.DriverId (value %s of type %T)", cp.Letter, cp.stringValue, cp.parsedValue))
+}
+
 // init will parse the string value of this parameter
-func (cp *CodeParameter) init(letter, value string, isString bool) error {
+func (cp *CodeParameter) init(letter, value string, isString, isDriverId bool) error {
 	cp.Letter = letter
 	cp.stringValue = value
 	cp.IsString = isString
+	cp.IsDriverId = isDriverId
 	if cp.IsString {
 		cp.parsedValue = cp.stringValue
 		return nil
+	} else if cp.IsDriverId {
+		return cp.ConvertDriverIds()
 	}
 	value = strings.TrimSpace(value)
 	if value == "" {
 		cp.parsedValue = 0
 	} else if strings.HasPrefix(value, "{") && strings.HasSuffix(value, "}") {
 		cp.IsExpression = true
-		cp.parsedValue = value
 	} else if strings.Contains(value, ":") {
 		cp.parseListValue(value)
 	} else if i, err := strconv.ParseInt(value, 10, 64); err == nil {
@@ -343,19 +376,6 @@ func (cp *CodeParameter) parseListValue(value string) {
 	}
 }
 
-func (cp *CodeParameter) MarshalJSON() ([]byte, error) {
-	ss := make(map[string]interface{})
-	ss["letter"] = cp.Letter
-	ss["value"] = cp.stringValue
-	if cp.IsString {
-		ss["isString"] = 1
-	} else {
-		ss["isString"] = 0
-	}
-
-	return json.Marshal(ss)
-}
-
 func (cp *CodeParameter) UnmarshalJSON(data []byte) error {
 	ss := make(map[string]interface{})
 	err := json.Unmarshal(data, &ss)
@@ -363,15 +383,27 @@ func (cp *CodeParameter) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	var letter, value string
-	var isString bool
+	var isString, isDriverId bool
 	for k, v := range ss {
 		if k == "letter" {
 			letter = v.(string)
 		} else if k == "value" {
 			value = v.(string)
 		} else if k == "isString" {
-			isString = v.(float64) == 1
+			switch v := v.(type) {
+			case bool:
+				isString = v
+			case float64:
+				isString = v == 1
+			}
+		} else if k == "isDriverId" {
+			switch v := v.(type) {
+			case bool:
+				isDriverId = v
+			case float64:
+				isDriverId = v == 1
+			}
 		}
 	}
-	return cp.init(letter, value, isString)
+	return cp.init(letter, value, isString, isDriverId)
 }
