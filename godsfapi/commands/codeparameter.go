@@ -238,6 +238,9 @@ func (cp *CodeParameter) AsUint64Slice() ([]uint64, error) {
 	case float64:
 		return []uint64{uint64(v)}, nil
 	case int64:
+		if v < 0 {
+			goto Error
+		}
 		return []uint64{uint64(v)}, nil
 	case uint64:
 		return []uint64{uint64(v)}, nil
@@ -250,6 +253,9 @@ func (cp *CodeParameter) AsUint64Slice() ([]uint64, error) {
 	case []int64:
 		fs := make([]uint64, 0, len(v))
 		for _, i := range v {
+			if i < 0 {
+				goto Error
+			}
 			fs = append(fs, uint64(i))
 		}
 		return fs, nil
@@ -262,7 +268,7 @@ func (cp *CodeParameter) AsUint64Slice() ([]uint64, error) {
 	case types.DriverId:
 		return []uint64{v.AsUint64()}, nil
 	}
-
+Error:
 	return nil, errors.New(fmt.Sprintf("Cannot convert %s parameter to []uint64 (value %s of type %T)", cp.Letter, cp.stringValue, cp.parsedValue))
 }
 
