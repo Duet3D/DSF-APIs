@@ -20,6 +20,9 @@ func (ic *InterceptConnection) Connect(mode initmessages.InterceptionMode, socke
 }
 
 // ReceiveCode waits for a code to be intercepted
+// Any other error than io.EOF requires the client to respond by either
+// CancelCode(), IgnoreCode() or ResolveCode() because DCS will otherwise
+// block while waiting for the Interceptor's response.
 func (ic *InterceptConnection) ReceiveCode() (*commands.Code, error) {
 	c := commands.NewCode()
 	err := ic.Receive(c)

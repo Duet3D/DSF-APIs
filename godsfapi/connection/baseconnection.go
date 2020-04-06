@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"log"
 	"net"
 
@@ -21,6 +22,22 @@ const (
 	// FullSocketPath is the default fully-qualified path to the UNIX socket for DuetControlServer
 	FullSocketPath = SocketDirectory + "/" + SocketFile
 )
+
+// DecodeError is returned if a response from DCS could not be unmarshalled
+type DecodeError struct {
+	Target string
+	Err    error
+}
+
+func (e *DecodeError) Unwrap() error { return e.Err }
+
+func (e *DecodeError) Error() string {
+	if e == nil {
+		return "<nil>"
+	}
+
+	return fmt.Sprintf("Failed to unmarshal to type %s because of %v", e.Target, e.Err)
+}
 
 // BaseConnection provides common functionalities for more concrete implementations
 type BaseConnection struct {
@@ -41,7 +58,7 @@ func (bc *BaseConnection) Connect(initMessage initmessages.ClientInitMessage, so
 
 	sim, err := bc.receiveServerInitMessage()
 	if err != nil {
-		return nil
+		return err
 	}
 
 	if !sim.IsCompatible() {
@@ -122,13 +139,25 @@ func (bc *BaseConnection) Receive(responseContainer interface{}) error {
 	if bc.Debug {
 		var b json.RawMessage
 		if err := bc.decoder.Decode(&b); err != nil {
-			return err
+			if err == io.EOF {
+				return err
+			}
+			return &DecodeError{
+				Err:    err,
+				Target: fmt.Sprintf("%T", responseContainer),
+			}
 		}
 		log.Println("[DEBUG] <Recv>", string(b))
 		return json.Unmarshal(b, responseContainer)
 	}
 	if err := bc.decoder.Decode(responseContainer); err != nil {
-		return err
+		if err == io.EOF {
+			return err
+		}
+		return &DecodeError{
+			Err:    err,
+			Target: fmt.Sprintf("%T", responseContainer),
+		}
 	}
 	return nil
 }
