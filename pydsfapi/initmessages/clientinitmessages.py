@@ -19,6 +19,9 @@ clientinitmessages holds all messages a client can send to the server to initiat
 """
 from enum import Enum
 
+# TODO: Move this to a common place for ServerInitMessage as well
+PROTOCOL_VERSION = 4
+
 
 class ConnectionMode(str, Enum):
     """Supported connection types for client connections"""
@@ -33,8 +36,10 @@ class ClientInitMessage:
     An instance of this class is sent from the client to the server as a response
     to the ServerInitMessage. It allows a client to select the connection mode.
     """
-    def __init__(self, mode: ConnectionMode = ConnectionMode.UNKNOWN, **kwargs):
+
+    def __init__(self, mode: ConnectionMode = ConnectionMode.UNKNOWN, version: int = PROTOCOL_VERSION, **kwargs):
         self.mode = mode
+        self.version = version
         for key, value in kwargs.items():
             self.__dict__[key] = value
 

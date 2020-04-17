@@ -30,7 +30,7 @@ type InterceptInitMessage struct {
 // NewInterceptInitMessage creates a new InterceptInitMessage for the given InterceptionMode
 func NewInterceptInitMessage(iMode InterceptionMode) ClientInitMessage {
 	return &InterceptInitMessage{
-		BaseInitMessage:  BaseInitMessage{Mode: ConnectionModeIntercept},
+		BaseInitMessage:  NewBaseInitMessage(ConnectionModeIntercept),
 		InterceptionMode: iMode,
 	}
 }

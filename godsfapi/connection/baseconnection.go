@@ -15,6 +15,8 @@ import (
 const (
 	// TaskCanceledException is the name of a remote exception to be checked for
 	TaskCanceledException = "TaskCanceledException"
+	// IncompatibleVersionException is the name of a remote exception to be checked for
+	IncompatibleVersionException = "IncompatibleVersionException"
 	// SocketDirectory is the default directory in which DSF-related UNIX sockets reside
 	SocketDirectory = "/var/run/dsf"
 	// SocketFile is the default UNIX socket file for DuetControlServer
@@ -62,7 +64,7 @@ func (bc *BaseConnection) Connect(initMessage initmessages.ClientInitMessage, so
 	}
 
 	if !sim.IsCompatible() {
-		return errors.New(fmt.Sprintf("Incompatible API version (expected %d got %d)", initmessages.ExpectedServerVersion, sim.Version))
+		return errors.New(fmt.Sprintf("Incompatible API version (expected %d got %d)", initmessages.ProtocolVersion, sim.Version))
 	}
 
 	bc.id = sim.Id
@@ -77,6 +79,9 @@ func (bc *BaseConnection) Connect(initMessage initmessages.ClientInitMessage, so
 		return err
 	}
 	if !br.IsSuccess() {
+		if br.GetErrorType() == IncompatibleVersionException {
+			return errors.New(br.GetErrorMessage())
+		}
 		return errors.New(fmt.Sprintf("Could not set connection type %s (%s: %s)", initMessage.GetMode(), br.GetErrorType(), br.GetErrorMessage()))
 	}
 
