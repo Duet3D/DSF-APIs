@@ -12,17 +12,17 @@ const (
 // Directories holds information about the directory structure
 type Directories struct {
 	// Filaments is the path to filaments directory
-	Filaments string
+	Filaments string `json:"filaments"`
 	// GCodes is the path to the gcodes directory
-	GCodes string
+	GCodes string `json:"gCodes"`
 	// Macros is the path to the macros directory
-	Macros string
+	Macros string `json:"macros"`
 	// System is the path to the sys directory
-	System string
+	System string `json:"system"`
 	// WWW is the path to the www directory
-	WWW string
+	WWW string `json:"www"`
 	// Menu is the path to the menu directory (12864 displays)
-	Menu string
+	Menu string `json:"menu"`
 }
 
 // NewDirectories returns an instance with all paths set to their defaults

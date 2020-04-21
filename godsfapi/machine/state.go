@@ -48,25 +48,25 @@ const (
 // State holds information about the machine state
 type State struct {
 	// AtxPower is the state of the ATX power pin (nil if not configured)
-	AtxPower *bool
+	AtxPower *bool `json:"atxPower"`
 	// Beed holds information about a requested beep
-	Beep BeepDetails
+	Beep BeepDetails `json:"beep"`
 	// CurrentTool is the number of the currently selected tool or -1 if none is selected
-	CurrentTool int64
+	CurrentTool int64 `json:"currentTool"`
 	// DisplayMessage is a persistent message to display (see M117)
-	DisplayMessage string
+	DisplayMessage string `json:"displayMessage"`
 	// LogFile being written to (empty if logging is disabled)
-	LogFile string
+	LogFile string `json:"logFile"`
 	// Mode the machine is currently in
-	Mode MachineMode
+	Mode MachineMode `json:"mode"`
 	// Status the machine has currently
-	Status MachineStatus
+	Status MachineStatus `json:"status"`
 }
 
 // BeepDetails about a requested beep
 type BeepDetails struct {
 	// Frequency of the requested beep (in Hz)
-	Frequency uint64
+	Frequency uint64 `json:"frequency"`
 	// Duration of the requested beep (in ms)
-	Duration float64
+	Duration float64 `json:"duration"`
 }

@@ -18,13 +18,13 @@ const (
 // MessageBox holds information about the message box to show
 type MessageBox struct {
 	// Mode of the message box to display or nil if none is shown
-	Mode *MessageBoxMode
+	Mode *MessageBoxMode `json:"mode"`
 	// Title of the message box
-	Title string
+	Title string `json:"title"`
 	// Message of the message box
-	Message string
+	Message string `json:"message"`
 	// AxisControls is a list of axis indices to show movement controls for
-	AxisControls []uint8
+	AxisControls []uint8 `json:"axisControls"`
 	// Seq is a counter that is incremented whenever a new message box is shown
-	Seq int64
+	Seq int64 `json:"seq"`
 }

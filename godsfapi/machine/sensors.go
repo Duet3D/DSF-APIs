@@ -54,21 +54,21 @@ const (
 // Sensors holds information about sensors
 type Sensors struct {
 	// Endstops is a list of configured endstops
-	Endstops []Endstop
+	Endstops []Endstop `json:"endstops"`
 	// Probes is a list of configured probes
-	Probes []Probe
+	Probes []Probe `json:"probes"`
 }
 
 // Endstop holds information about an endstop
 type Endstop struct {
 	// Action to perform when this endstop is hit
-	Action EndstopAction
+	Action EndstopAction `json:"action"`
 	// Triggered represents the curent trigger state
-	Triggered bool
+	Triggered bool `json:"triggered"`
 	// Type of this endstop
-	Type EndstopType
+	Type EndstopType `json:"type"`
 	// Probe is the index of the use probe (only valid if Type == EndstopTypeProbe)
-	Probe int64
+	Probe int64 `json:"probe"`
 }
 
 const (
@@ -87,37 +87,37 @@ const (
 // Probe holds information about a configured probe
 type Probe struct {
 	// Type of the configured probe
-	Type ProbeType
+	Type ProbeType `json:"type"`
 	// Value is the current analog value of the probe
-	Value int64
+	Value int64 `json:"value"`
 	// SecondaryValues of the probe
-	SecondaryValues []int64
+	SecondaryValues []int64 `json:"secondaryValues"`
 	// Threshold at which the probe is considered to be triggered (0..1023)
-	Threshold int64
+	Threshold int64 `json:"threshold"`
 	// Speed at which probing is performed (in mm/s)
-	Speed float64
+	Speed float64 `json:"speed"`
 	// DiveHeight is how far above the probe point a probing move starts (in mm)
-	DiveHeight float64
+	DiveHeight float64 `json:"diveHeight"`
 	// Offsets for X and Y (in mm)
-	Offsets []float64
+	Offsets []float64 `json:"offsets"`
 	// TriggerHeight is th  Z height at which the probe is triggered (in mm)
-	TriggerHeight float64
+	TriggerHeight float64 `json:"triggerHeight"`
 	// Filtered is true if the probe signal is filtered
-	Filtered bool
+	Filtered bool `json:"filtered"`
 	// Inverted is true if the probe signal is inverted
-	Inverted bool
+	Inverted bool `json:"inverted"`
 	// RecoveryTime (in s)
-	RecoveryTime float64
+	RecoveryTime float64 `json:"recoveryTime"`
 	// TravelSpeed when probing multiple points (in mm/s)
-	TravelSpeed float64
+	TravelSpeed float64 `json:"travelSpeed"`
 	// MaxProbeCount is the maximum number of times to probe after a bad reading
 	// was determined
-	MaxProbeCount uint64
+	MaxProbeCount uint64 `json:"maxProbeCount"`
 	// Tolerance is the allowed deviation between two measurements (in mm)
-	Tolerance float64
+	Tolerance float64 `json:"tolerance"`
 	// DisablesBed is true if the bed heater(s) are disabled while probing
-	DisablesBed bool
+	DisablesBed bool `json:"disablesBed"`
 	// Persistent indicates if the probe parameters are supposed to be
 	// saved to config-override.g
-	Persistent bool
+	Persistent bool `json:"persistent"`
 }

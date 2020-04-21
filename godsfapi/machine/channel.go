@@ -23,19 +23,19 @@ const (
 // Channel holds information about G/M/T-code channels
 type Channel struct {
 	// Compatibility is the emulation used on this channel
-	Compatibility Compatibility
+	Compatibility Compatibility `json:"compatibility"`
 	// Feedrate is the current feedrate in mm/s
-	Feedrate float64
+	Feedrate float64 `json:"feedrate"`
 	// RelativeExtrusion represents usage of relative extrusion
-	RelativeExtrusion bool
+	RelativeExtrusion bool `json:"relativeExtrusion"`
 	// VolumetricExtrusion represents usage of volumetric extrusion
-	VolumetricExtrusion bool
+	VolumetricExtrusion bool `json:"volumetricExtrusion"`
 	// RelativePositioning represents usage of relative positioning
-	RelativePositioning bool
+	RelativePositioning bool `json:"relativePositioning"`
 	// UsingInches represents the usage of inches instead of mm
-	UsingInches bool
+	UsingInches bool `json:"usingInches"`
 	// StackDepth is the depth of the stack
-	StackDepth uint8
+	StackDepth uint8 `json:"stackDepth"`
 	// LineNumber is the number of the current line
-	LineNumber int64
+	LineNumber int64 `json:"lineNumber"`
 }

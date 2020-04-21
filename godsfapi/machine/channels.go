@@ -7,27 +7,27 @@ import (
 // Channels holds all available code channels
 type Channels struct {
 	// HTTP is the G/M/T-code channel for HTTP requests
-	HTTP Channel
+	HTTP Channel `json:"http"`
 	// Telnet is the G/M/T-code channel for Telnet requests
-	Telnet Channel
+	Telnet Channel `json:"telnet"`
 	// File is the G/M/T-code channel for file jobs
-	File Channel
+	File Channel `json:"file"`
 	// USB is the G/M/T-code channel for USB
-	USB Channel
+	USB Channel `json:"usb"`
 	// AUX is the G/M/T-code channel for serial devices (e.g. UART, PanelDue)
-	AUX Channel
+	AUX Channel `json:"aux"`
 	// Trigger is the G/M/T-code channel to deal with triggers and config.g
-	Trigger Channel
+	Trigger Channel `json:"trigger"`
 	// CodeQueue is the G/M/T-code channel for the code queue
-	CodeQueue Channel
+	CodeQueue Channel `json:"codeQueue"`
 	// LCD is the G/M/T-code channel for auxiliary LCD devices
-	LCD Channel
+	LCD Channel `json:"lcd"`
 	// SPI is the G/M/T-code channel for generic codes via SPI
-	SPI Channel
+	SPI Channel `json:"spi"`
 	// Daemon is the code channel that executes the daemon process
-	Daemon Channel
+	Daemon Channel `json:"daemon"`
 	// AutoPause is the G/M/T-code channel for auto pause events
-	AutoPause Channel
+	AutoPause Channel `json:"autoPause"`
 }
 
 // NewChannels creates a new Channels with default Compatibility set for certain channels

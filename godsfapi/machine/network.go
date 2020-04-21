@@ -34,38 +34,38 @@ const (
 // Network holds information about the network subsytem
 type Network struct {
 	// Name of the machine
-	Name string
+	Name string `json:"name"`
 	// Hostname of the machine
-	Hostname string
+	Hostname string `json:"hostname"`
 	// Password required to access this machine
-	Password string
+	Password string `json:"password"`
 	// Interfaces is a list of available network interfaces
-	Interfaces []NetworkInterface
+	Interfaces []NetworkInterface `json:"interfaces"`
 }
 
 // NeworkInterface holds information about a network interface
 type NetworkInterface struct {
 	// Type of this network interface
-	Type InterfaceType
+	Type InterfaceType `json:"type"`
 	// FirmwareVersion of the network interface (empty for unknonw)
 	// This is primarily intended for the ESP8266-based network interfaces as used on the Duet WiFi
-	FirmwareVersion string
+	FirmwareVersion string `json:"firmwareVersion"`
 	// Speed of the network interface (in MBit, nil if unknown, 0 if not connected)
-	Speed *uint64
+	Speed *uint64 `json:"speed"`
 	// Signal strength of the WiFi adapter (in dBm)
-	Signal int64
+	Signal int64 `json:"signal"`
 	// MacAddress of the network adapter
-	MacAddress string
+	MacAddress string `json:"macAddress"`
 	// ConfiguredIP is the IPv4 address of the network adapter
-	ConfiguredIP string
+	ConfiguredIP string `json:"configuredIP"`
 	// ActualIP tis the actual IPv4 address of the network adapter
-	ActualIP string
+	ActualIP string `json:"actualIP"`
 	// Subnet mask of the network adapter
-	Subnet string
+	Subnet string `json:"subnet"`
 	// Gateway address for this network adapter
-	Gateway string
+	Gateway string `json:"gateway"`
 	// NumReconnnects is the number of reconnect attempts
-	NumReconnnects uint64
+	NumReconnnects uint64 `json:"numReconnnects"`
 	// ActiveProtocols is a list of active network protocols
-	ActiveProtocols []NetworkProtocol
+	ActiveProtocols []NetworkProtocol `json:"activeProtocols"`
 }

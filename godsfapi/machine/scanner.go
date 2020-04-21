@@ -21,7 +21,7 @@ const (
 // Scanner holds information about the 3D scanner subsytem
 type Scanner struct {
 	// Progress of the current action on scale between 0 and 1
-	Progress float64
+	Progress float64 `json:"progress"`
 	// Status of the 3D scanner
-	Status ScannerStatus
+	Status ScannerStatus `json:"status"`
 }
