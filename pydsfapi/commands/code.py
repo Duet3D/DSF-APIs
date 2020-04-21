@@ -32,8 +32,8 @@ class CodeType(str, Enum):
     TCode = 'T'
 
 
-class Keyword(IntEnum):
-    """Types of conditional G-code"""
+class KeywordType(IntEnum):
+    """Enumeration of conditional G-code keywords"""
     KeywordNone = 0
     If = 1
     ElseIf = 2
@@ -45,6 +45,22 @@ class Keyword(IntEnum):
     Var = 8
     Set = 9
     Echo = 10
+    Continue = 11
+
+
+keyword_type_names = {
+        KeywordType.Abort: 'abort',
+        KeywordType.Break: 'break',
+        KeywordType.Echo: 'echo',
+        KeywordType.Else: 'else',
+        KeywordType.ElseIf: 'elif',
+        KeywordType.If: 'if',
+        KeywordType.Return: 'return',
+        KeywordType.Set: 'set',
+        KeywordType.Var: 'var',
+        KeywordType.While: 'while',
+        KeywordType.Continue: 'continue',
+}
 
 
 class CodeFlags(IntEnum):
@@ -98,19 +114,11 @@ class Code(BaseCommand):
 
     def __str__(self):
         """Convert the parsed code back to a text-based G/M/T-code"""
-        if self.keyword != Keyword.KeywordNone:
-            return {
-                    Keyword.Abort: 'abort {0}'.format(self.keywordArgument),
-                    Keyword.Break: 'break',
-                    Keyword.Echo: 'echo {0}'.format(self.keywordArgument),
-                    Keyword.Else: 'else',
-                    Keyword.ElseIf: 'elif {0}'.format(self.keywordArgument),
-                    Keyword.If: 'if {0}'.format(self.keywordArgument),
-                    Keyword.Return: 'return {0}'.format(self.keywordArgument),
-                    Keyword.Set: 'set {0}'.format(self.keywordArgument),
-                    Keyword.Var: 'var {0}'.format(self.keywordArgument),
-                    Keyword.While: 'while {0}'.format(self.keywordArgument),
-            }.get(self.keyword)
+        if self.keyword != KeywordType.KeywordNone:
+            if self.keywordArgument is not None:
+                return '{0} {1}'.format(self.keyword_to_str(), self.keywordArgument)
+            else:
+                return self.keyword_to_str()
 
         if self.type == CodeType.Comment:
             return ';{0}'.format(self.comment)
@@ -143,3 +151,7 @@ class Code(BaseCommand):
             return '{0}{1}'.format(self.type, self.majorNumber)
 
         return self.type
+
+    def keyword_to_str(self):
+        """Convert the keyword to a str"""
+        return keyword_type_names.get(self.keyword)

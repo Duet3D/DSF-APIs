@@ -33,7 +33,7 @@ class ServerInitMessage:
         """Deserialize a dictionary coming from JSON into an instance of this class"""
         return cls(**data)
 
-    EXPECTED_SERVER_VERSION = 4
+    PROTOCOL_VERSION = 5
 
     def __init__(self, version: int, id: int):
         self.version = version
@@ -41,4 +41,4 @@ class ServerInitMessage:
 
     def is_compatible(self):
         """Check if the message received from the server indicates compatibility with this client"""
-        return self.version >= self.EXPECTED_SERVER_VERSION
+        return self.version >= ServerInitMessage.PROTOCOL_VERSION

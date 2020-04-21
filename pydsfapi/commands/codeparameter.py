@@ -81,9 +81,9 @@ class CodeParameter(json.JSONEncoder):
         return cls(**data)
 
     @classmethod
-    def simple_param(cls, letter: str, value):
+    def simple_param(cls, letter: str, value, isDriverId: bool = False):
         """Create a new simple parameter without parsing the value"""
-        return cls(letter, value)
+        return cls(letter, value, isDriverId=isDriverId)
 
     def __init__(self, letter: chr, value: str, isString: bool = None, isDriverId: bool = None):
         """
