@@ -64,7 +64,7 @@ func (bc *BaseConnection) Connect(initMessage initmessages.ClientInitMessage, so
 	}
 
 	if !sim.IsCompatible() {
-		return errors.New(fmt.Sprintf("Incompatible API version (expected %d got %d)", initmessages.ProtocolVersion, sim.Version))
+		return errors.New(fmt.Sprintf("Incompatible API version (expected %d got %d)", initmessages.ExpectedServerVersion, sim.Version))
 	}
 
 	bc.id = sim.Id

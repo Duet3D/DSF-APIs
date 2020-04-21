@@ -31,7 +31,7 @@ type SubscribeInitMessage struct {
 // NewSubscribeInitMessage returns a new SubscribeInitMessage for the given mode and filter
 func NewSubscribeInitMessage(subMode SubscriptionMode, filter string) ClientInitMessage {
 	return &SubscribeInitMessage{
-		BaseInitMessage:  NewBaseInitMessage(ConnectionModeSubscribe),
+		BaseInitMessage:  BaseInitMessage{Mode: ConnectionModeSubscribe},
 		SubscriptionMode: subMode,
 		Filter:           filter,
 	}

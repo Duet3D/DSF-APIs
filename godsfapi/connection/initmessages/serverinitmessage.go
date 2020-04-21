@@ -1,9 +1,9 @@
 package initmessages
 
 const (
-	// ProcotolVersion is the version the server needs to have to be compatible with
+	// ExpectedServerVersion is the version the server needs to have to be compatible with
 	// this client
-	ProtocolVersion = 4
+	ExpectedServerVersion = 3
 )
 
 // ServerInitMessage is sent by the server to the client in JSON format once a connection
@@ -20,5 +20,5 @@ type ServerInitMessage struct {
 
 // IsCompatible checks if the returned server API version is compatible with this client
 func (s *ServerInitMessage) IsCompatible() bool {
-	return s.Version >= ProtocolVersion
+	return s.Version >= ExpectedServerVersion
 }

@@ -24,7 +24,6 @@ const (
 type ClientInitMessage interface {
 	// GetMode returns the connection mode
 	GetMode() ConnectionMode
-	GetVersion() int64
 }
 
 // BaseInitMessage holds the common members of all init messages
@@ -38,7 +37,7 @@ type BaseInitMessage struct {
 func NewBaseInitMessage(mode ConnectionMode) BaseInitMessage {
 	return BaseInitMessage{
 		Mode:    mode,
-		Version: ProtocolVersion,
+		Version: ExpectedServerVersion,
 	}
 }
 
@@ -46,12 +45,8 @@ func (bim *BaseInitMessage) GetMode() ConnectionMode {
 	return bim.Mode
 }
 
-func (bim *BaseInitMessage) GetVersion() int64 {
-	return bim.Version
-}
-
 // commandInitMessage is a BaseInitMessage with a fixed mode and no further members
-var commandInitMessage = NewBaseInitMessage(ConnectionModeCommand)
+var commandInitMessage = BaseInitMessage{Mode: ConnectionModeCommand}
 
 // NewCommandInitMessage returns a command init message
 func NewCommandInitMessage() ClientInitMessage {

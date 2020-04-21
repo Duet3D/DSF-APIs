@@ -1,6 +1,8 @@
 package machine
 
-import "github.com/Duet3D/DSF-APIs/godsfapi/types"
+import (
+	"github.com/Duet3D/DSF-APIs/godsfapi/types"
+)
 
 // Channels holds all available code channels
 type Channels struct {
@@ -12,16 +14,18 @@ type Channels struct {
 	File Channel
 	// USB is the G/M/T-code channel for USB
 	USB Channel
-	// Aux is the G/M/T-code channel for serial devices (e.g. UART, PanelDue)
-	Aux Channel
-	// Daemon is the G/M/T-code channel to deal with triggers and config.g
-	Daemon Channel
-	// Queue is the G/M/T-code channel for the code queue
-	Queue Channel
+	// AUX is the G/M/T-code channel for serial devices (e.g. UART, PanelDue)
+	AUX Channel
+	// Trigger is the G/M/T-code channel to deal with triggers and config.g
+	Trigger Channel
+	// CodeQueue is the G/M/T-code channel for the code queue
+	CodeQueue Channel
 	// LCD is the G/M/T-code channel for auxiliary LCD devices
 	LCD Channel
-	// SBC is the G/M/T-code channel for generic codes via SBC
-	SBC Channel
+	// SPI is the G/M/T-code channel for generic codes via SPI
+	SPI Channel
+	// Daemon is the code channel that executes the daemon process
+	Daemon Channel
 	// AutoPause is the G/M/T-code channel for auto pause events
 	AutoPause Channel
 }
@@ -46,19 +50,21 @@ func (ch *Channels) Get(cc types.CodeChannel) Channel {
 		return ch.File
 	case types.USB:
 		return ch.USB
-	case types.Aux:
-		return ch.Aux
-	case types.Daemon:
-		return ch.Daemon
-	case types.Queue:
-		return ch.Queue
+	case types.AUX:
+		return ch.AUX
+	case types.Trigger:
+		return ch.Trigger
+	case types.CodeQueue:
+		return ch.CodeQueue
 	case types.LCD:
 		return ch.LCD
-	case types.SBC:
-		return ch.SBC
+	case types.SPI:
+		return ch.SPI
+	case types.Daemon:
+		return ch.Daemon
 	case types.AutoPause:
 		return ch.AutoPause
 	default:
-		return ch.SBC
+		return ch.SPI
 	}
 }
