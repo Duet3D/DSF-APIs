@@ -231,7 +231,7 @@ class BaseConnection:
         if not server_init_message.is_compatible():
             raise serverinitmessage.IncompatibleVersionException(
                 'Incompatible API version (need {0}, got {1})'.format(
-                    server_init_message.EXPECTED_SERVER_VERSION, server_init_message.version))
+                    server_init_message.PROTOCOL_VERSION, server_init_message.version))
         self.id = server_init_message.id
         self.send(init_message)
 
