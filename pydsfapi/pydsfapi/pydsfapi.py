@@ -23,10 +23,10 @@ import json
 import os
 import socket
 from concurrent.futures import ThreadPoolExecutor
-from commands import responses, basecommands, code, result, codechannel
-from commands.basecommands import MessageType
-from initmessages import serverinitmessage, clientinitmessages
-from model import parsedfileinfo, machinemodel
+from .commands import responses, basecommands, code, result, codechannel
+from .commands.basecommands import MessageType
+from .initmessages import serverinitmessage, clientinitmessages
+from .model import parsedfileinfo, machinemodel
 
 SOCKET_DIRECTORY = "/var/run/dsf"
 SOCKET_FILE = "dcs.sock"

@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 
-from commands import basecommands, code
 import sys
 import time
-import pydsfapi
-from initmessages.clientinitmessages import InterceptionMode, SubscriptionMode
+from pydsfapi import pydsfapi
+from pydsfapi.commands import basecommands, code
+from pydsfapi.initmessages.clientinitmessages import InterceptionMode, SubscriptionMode
 
 def intercept():
     """Example of intercepting and interacting with codes"""
     intercept_connection = pydsfapi.InterceptConnection(InterceptionMode.PRE, debug=True)
-    intercept_connection.connect('/home/manuel/tmp/duet.sock')
+    intercept_connection.connect()
 
     try:
         while True:
@@ -43,7 +43,7 @@ def intercept():
 def command():
     """Example of a command connection to send arbitrary commands to the machine"""
     command_connection = pydsfapi.CommandConnection(debug=False)
-    command_connection.connect('/home/manuel/tmp/duet.sock')
+    command_connection.connect()
 
     try:
         # Perform a simple command and wait for its output
@@ -56,7 +56,7 @@ def command():
 def subscribe():
     """Example of a subscribe connection to get the machine model"""
     subscribe_connection = pydsfapi.SubscribeConnection(SubscriptionMode.PATCH, debug=True)
-    subscribe_connection.connect('/home/manuel/tmp/duet.sock')
+    subscribe_connection.connect()
 
     try:
         # Get the complete model once
@@ -80,7 +80,7 @@ async def respond_something(http_endpoint_connection):
 def custom_endpoint():
     """Example to create a custom GET endpoint at http://duet3/machine/custom/getIt"""
     cmd_conn = pydsfapi.CommandConnection(debug=True)
-    cmd_conn.connect('/home/manuel/tmp/duet.sock')
+    cmd_conn.connect()
     endpoint = None
     try:
         # Setup the endpoint
@@ -95,7 +95,7 @@ def custom_endpoint():
         cmd_conn.close()
 
 
-# intercept()
+intercept()
 # command()
-subscribe()
+# subscribe()
 # custom_endpoint()  # This can only be run on the SBC

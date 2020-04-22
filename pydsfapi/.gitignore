@@ -1,2 +1,5 @@
 Session.vim
 __pycache__
+MANIFEST
+build/
+dist/
