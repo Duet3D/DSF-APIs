@@ -85,7 +85,7 @@ class CodeParameter(json.JSONEncoder):
         """Create a new simple parameter without parsing the value"""
         return cls(letter, value, isDriverId=isDriverId)
 
-    def __init__(self, letter: chr, value: str, isString: bool = None, isDriverId: bool = None):
+    def __init__(self, letter: chr, value, isString: bool = None, isDriverId: bool = None):
         """
         Creates a new CodeParameter instance and parses value to a native data type
         if applicable
@@ -96,6 +96,7 @@ class CodeParameter(json.JSONEncoder):
             self.letter = letter
             self.string_value = str(value)
             self.__parsed_value = value
+            self.is_expression = self.string_value.startswith('{}') and self.string_value.endswith('}')
             return
 
         self.letter = letter
@@ -268,7 +269,7 @@ class CodeParameter(json.JSONEncoder):
         return not self == other
 
     def __str__(self):
-        if self.is_string:
+        if self.is_string and not self.is_expression:
             double_quoted = self.string_value.replace('"', '""')
             return '{0}"{1}"'.format(self.letter, double_quoted)
 
