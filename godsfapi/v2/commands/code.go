@@ -175,7 +175,7 @@ func NewCode() *Code {
 // Clone an existing Code into a new instance
 func (c *Code) Clone() *Code {
 	cc := *c
-	cparams := make([]CodeParameter, len(c.Parameters))
+	cparams := make([]CodeParameter, 0)
 	for _, p := range c.Parameters {
 		cp := p.Clone()
 		cparams = append(cparams, *cp)

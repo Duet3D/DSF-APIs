@@ -39,18 +39,22 @@ func NewCodeParameter(letter, value string, isString, isDriverId bool) (*CodePar
 
 // NewSimpleCodeParameter instantiates a CodeParameter for the given letter and value
 func NewSimpleCodeParameter(letter string, value interface{}) *CodeParameter {
-	_, isString := value.(string)
+	sv, isString := value.(string)
+	if !isString {
+		sv = fmt.Sprintf("%v", value)
+	}
 	return &CodeParameter{
-		Letter:      letter,
-		parsedValue: value,
-		stringValue: fmt.Sprintf("%v", value),
-		IsString:    isString,
+		Letter:       letter,
+		parsedValue:  value,
+		stringValue:  sv,
+		IsString:     isString,
+		IsExpression: isString && strings.HasPrefix(sv, "{") && strings.HasSuffix(sv, "}"),
 	}
 }
 
 // String prints out the parameter with quotes around the value if it is a string parameter
 func (cp CodeParameter) String() string {
-	if cp.IsString {
+	if cp.IsString && !cp.IsExpression {
 		return fmt.Sprintf(`%s"%s"`, cp.Letter, strings.ReplaceAll(cp.stringValue, `"`, `""`))
 	}
 	return fmt.Sprintf("%s%s", cp.Letter, cp.stringValue)
