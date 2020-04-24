@@ -122,6 +122,8 @@ type CurrentMove struct {
 	Acceleration float64 `json:"acceleration"`
 	// Deceleration of the current move (in mm/s^2)
 	Deceleration float64 `json:"deceleration"`
+	// LaserPwm of the current move as 0..1 or nil if not applicable
+	LaserPwm *float64 `json:"laserPwm"`
 	// RequestedSpeed of the current move (in mm/s)
 	RequestedSpeed float64 `json:"requestedSpeed"`
 	// TopSpeed actually reached for the current move (in mm/s)

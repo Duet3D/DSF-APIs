@@ -19,7 +19,7 @@ type State struct {
 	DsfVersion string `json:"dsfVersion"`
 	// GpOut is a list of general-purpose output ports
 	GpOut []GpOutputPort `json:"gpOut"`
-	// LaserPwm is current laser PWM on a scale of 0..1 or nil if not applicable
+	// LaserPwm is laser PWM of the next commanded move on a scale of 0..1 or nil if not applicable
 	LaserPwm *float64 `json:"laserPwm"`
 	// LogFile being written to (empty if logging is disabled)
 	LogFile string `json:"logFile"`
