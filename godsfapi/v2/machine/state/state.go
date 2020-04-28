@@ -103,8 +103,8 @@ type RestorePoint struct {
 	ExtruderPos float64 `json:"extruderPos"`
 	// FeedRate is the requested feed rate (in mm/s)
 	FeedRate float64 `json:"feedRate"`
-	// IoBits is the output port bits setting for this move
-	IoBits int64 `json:"ioBits"`
+	// IoBits is the output port bits setting for this move or nil if not applicable
+	IoBits *int64 `json:"ioBits"`
 	// LaserPwm value in the range 0..1 or nil if not applicable
 	LaserPwm *float64 `json:"laserPwm"`
 	// SpindleSpeeds are the spindle RPMs that were set, negative if anticlockwise direction

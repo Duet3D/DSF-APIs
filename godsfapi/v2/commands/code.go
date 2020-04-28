@@ -191,6 +191,11 @@ func (c *Code) IsMajorNumber(n int64) bool {
 	return c.MajorNumber != nil && *c.MajorNumber == n
 }
 
+// HasFlag checks if this code has the given flag set
+func (c *Code) HasFlag(flag CodeFlags) bool {
+	return (c.Flags & flag) != 0
+}
+
 // HasParameter returns whether or not a certain parameter is present without returning the
 // CodeParameter instance
 func (c *Code) HasParameter(letter string) bool {
@@ -308,11 +313,15 @@ func (c *Code) ShortString() string {
 		return "(comment)"
 	}
 
+	var prefix string
+	if c.HasFlag(EnforceAbsolutePosition) {
+		prefix = "G53 "
+	}
 	if c.MajorNumber != nil {
 		if c.MinorNumber != nil {
-			return fmt.Sprintf("%s%d.%d", c.Type, *c.MajorNumber, *c.MinorNumber)
+			return fmt.Sprintf("%s%s%d.%d", prefix, c.Type, *c.MajorNumber, *c.MinorNumber)
 		}
-		return fmt.Sprintf("%s%d", c.Type, *c.MajorNumber)
+		return fmt.Sprintf("%s%s%d", prefix, c.Type, *c.MajorNumber)
 	}
-	return string(c.Type)
+	return fmt.Sprintf("%s%s", prefix, string(c.Type))
 }

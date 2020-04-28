@@ -49,6 +49,8 @@ type MoveCompensation struct {
 	MeshDeviation *MoveDeviations `json:"meshDeviation"`
 	// ProbeGrid holds the settings of the current probe grid
 	ProbeGrid ProbeGrid `json:"probeGrid"`
+	// Skew holds information about the configured orthogonal axis parameters
+	Skew Skew
 	// Type is the type of compensation in use
 	Type MoveCompensationType `json:"type"`
 }
@@ -224,4 +226,14 @@ type ProbeGrid struct {
 	YSpacing float64 `json:"ySpacing"`
 	// Radius is the probing radius on delta kinematics
 	Radius float64 `json:"radius"`
+}
+
+// Skew holds details about orthogonal axis compensation parameters
+type Skew struct {
+	// TanXY is the tangent of the skew angle for XY axes
+	TanXY float64
+	// TaxXZ is the tangent of the skew angle for XZ axes
+	TanXZ float64
+	// TaxYZ is the tangent of the skew angle for YZ axes
+	TanYZ float64
 }

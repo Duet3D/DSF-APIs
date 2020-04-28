@@ -49,6 +49,24 @@ func (fm FilamentMonitors) GetAsBaseFilamentMonitor(i int) (*BaseFilamentMonitor
 	return bfm, nil
 }
 
+// GetAsSimpleFilamentMonitor returns the instance at the given index as SimpleFilamentMonitor
+func (fm FilamentMonitors) GetAsSimpleFilamentMonitor(i int) (*SimpleFilamentMonitor, error) {
+	if i < 0 || i > len(fm) {
+		return nil, ErrInvalidIndex
+	}
+	f := fm[i]
+	name := f.GetType()
+	if name != Simple {
+		return nil, fmt.Errorf("Not SimpleFilamentMonitor: %s", name)
+	}
+	sfm := &SimpleFilamentMonitor{}
+	err := mapstructure.Decode(f, sfm)
+	if err != nil {
+		return nil, err
+	}
+	return sfm, nil
+}
+
 // GetAsLaserFilamentMonitor returns the instance at the given index as LaserFilamentMonitor
 func (fm FilamentMonitors) GetAsLaserFilamentMonitor(i int) (*LaserFilamentMonitor, error) {
 	if i < 0 || i > len(fm) {
@@ -107,8 +125,6 @@ func (fm FilamentMonitors) GetAsRotatingMagnetFilamentMonitor(i int) (*RotatingM
 type BaseFilamentMonitor struct {
 	// Enabled indicates if this filament monitor is enabled
 	Enabled bool `json:"enabled"`
-	// FilamentPresent indicates if filament is present or nil if not available
-	FilamentPresent *bool `json:"filamentPresent"`
 	// Type of this filament monitor
 	Type FilamentMonitorType `json:"type"`
 }
@@ -116,6 +132,19 @@ type BaseFilamentMonitor struct {
 // AsFilamentMonitor returns this instance as FilamentMonitor
 func (bfm *BaseFilamentMonitor) AsFilamentMonitor() (FilamentMonitor, error) {
 	return toFilamentMonitor(bfm)
+}
+
+// SimpleFilamentMonitor represents a simple filament monitor
+type SimpleFilamentMonitor struct {
+	BaseFilamentMonitor `mapstructure:",squash"`
+
+	// FilamentPresent indicates if filament is present or nil if not available
+	FilamentPresent *bool `json:"filamentPresent"`
+}
+
+// AsFilamentMonitor returns this instance as FilamentMonitor
+func (sfm *SimpleFilamentMonitor) AsFilamentMonitor() (FilamentMonitor, error) {
+	return toFilamentMonitor(sfm)
 }
 
 // FilamentMonitorProperties shared by all FilamentMonitorCalibrated and FilamentMonitorConfigured structs
@@ -129,6 +158,7 @@ type FilamentMonitorProperties struct {
 // FilamentMonitorCalibrated shared by all concrete type structs
 type FilamentMonitorCalibrated struct {
 	FilamentMonitorProperties `mapstructure:",squash"`
+
 	// TotalDistance extruded (in mm)
 	TotalDistance float64 `json:"totalDistance"`
 }
@@ -136,6 +166,7 @@ type FilamentMonitorCalibrated struct {
 // FilamentMonitorConfigured shared by all concrete type structs
 type FilamentMonitorConfigured struct {
 	FilamentMonitorProperties `mapstructure:",squash"`
+
 	// SampleDistance in mm
 	SampleDistance float64 `json:"sampleDistance"`
 }
@@ -158,7 +189,7 @@ const (
 
 // LaserFilamentMonitor holds information about a laser filament monitor
 type LaserFilamentMonitor struct {
-	BaseFilamentMonitor `mapstructure:",squash"`
+	SimpleFilamentMonitor `mapstructure:",squash"`
 
 	// Calibrated holds calibrated properties of this filament sensor
 	Calibrated LaserFilamentMonitorCalibrated `json:"calibrated"`
@@ -215,7 +246,7 @@ type PulsedFilamentMonitorConfigured struct {
 
 // RotatingMagnetFilamentMonitor holds information about a rotating magnet filament monitor
 type RotatingMagnetFilamentMonitor struct {
-	BaseFilamentMonitor `mapstructure:",squash"`
+	SimpleFilamentMonitor `mapstructure:",squash"`
 
 	// Calibrated holds calibrated properties of this filament monitor
 	Calibrated RotatingMagnetFilamentMonitorCalibrated `json:"calibrated"`
