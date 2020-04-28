@@ -144,13 +144,14 @@ class Code(BaseCommand):
         if self.type == CodeType.Comment:
             return '(comment)'
 
+        prefix = 'G53 ' if self.flags & CodeFlags.EnforceAbsolutePosition != 0 else ''
         if self.majorNumber is not None:
             if self.minorNumber is not None:
-                return '{0}{1}.{2}'.format(self.type, self.majorNumber, self.minorNumber)
+                return '{0}{1}{2}.{3}'.format(prefix, self.type, self.majorNumber, self.minorNumber)
 
-            return '{0}{1}'.format(self.type, self.majorNumber)
+            return '{0}{1}{2}'.format(prefix, self.type, self.majorNumber)
 
-        return self.type
+        return '{0}{1}'.format(prefix, self.type)
 
     def keyword_to_str(self):
         """Convert the keyword to a str"""
