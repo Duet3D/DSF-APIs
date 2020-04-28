@@ -20,7 +20,7 @@ clientinitmessages holds all messages a client can send to the server to initiat
 from enum import Enum
 
 # TODO: Move this to a common place for ServerInitMessage as well
-PROTOCOL_VERSION = 5
+PROTOCOL_VERSION = 6
 
 
 class ConnectionMode(str, Enum):
