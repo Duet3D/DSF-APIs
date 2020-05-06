@@ -72,6 +72,8 @@ class DriverId:
 class CodeParameter(json.JSONEncoder):
     """Represents a parsed parameter of a G/M/T-code"""
 
+    LETTER_FOR_UNPRECEDENTED_STRING = '@'
+
     def default(self, o):
         return {'letter': o.letter, 'value': o.value, 'isString': isinstance(o.value, str), 'isDriverId': o.is_driver_id}
 
@@ -269,8 +271,9 @@ class CodeParameter(json.JSONEncoder):
         return not self == other
 
     def __str__(self):
+        letter = self.letter if not self.letter == CodeParameter.LETTER_FOR_UNPRECEDENTED_STRING else ''
         if self.is_string and not self.is_expression:
             double_quoted = self.string_value.replace('"', '""')
-            return '{0}"{1}"'.format(self.letter, double_quoted)
+            return '{0}"{1}"'.format(letter, double_quoted)
 
-        return '{0}{1}'.format(self.letter, self.string_value)
+        return '{0}{1}'.format(letter, self.string_value)

@@ -26,7 +26,7 @@ from .result import Message
 
 class CodeType(str, Enum):
     """Type of a generic G/M/T-code. If none is applicable, it is treated as a comment"""
-    Comment = 'C'
+    Comment = 'Q'
     GCode = 'G'
     MCode = 'M'
     TCode = 'T'
