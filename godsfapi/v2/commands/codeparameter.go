@@ -14,9 +14,16 @@ import (
 // ErrMissingParameter if a parameter was not available
 var ErrMissingParameter = errors.New("Parameter not found")
 
+const (
+	// LetterForUnprecentedString is a special value for Parameters
+	// that have no preceding letter
+	LetterForUnprecentedString = "@"
+)
+
 // CodeParameter represents a parsed parameter of a G/M/T-code
 type CodeParameter struct {
-	// Letter of the code parameter (e.g. P in M106 P2)
+	// Letter of the code parameter (e.g. P in M106 P2). This is the LetterForUnprecentedString if
+	// this parameter does not have a preceding letter.
 	Letter string
 	// IsExpression indicates if this parameter is an expression that can be evaluated
 	IsExpression bool
@@ -54,10 +61,14 @@ func NewSimpleCodeParameter(letter string, value interface{}) *CodeParameter {
 
 // String prints out the parameter with quotes around the value if it is a string parameter
 func (cp CodeParameter) String() string {
-	if cp.IsString && !cp.IsExpression {
-		return fmt.Sprintf(`%s"%s"`, cp.Letter, strings.ReplaceAll(cp.stringValue, `"`, `""`))
+	l := cp.Letter
+	if cp.Letter == LetterForUnprecentedString {
+		l = ""
 	}
-	return fmt.Sprintf("%s%s", cp.Letter, cp.stringValue)
+	if cp.IsString && !cp.IsExpression {
+		return fmt.Sprintf(`%s"%s"`, l, strings.ReplaceAll(cp.stringValue, `"`, `""`))
+	}
+	return fmt.Sprintf("%s%s", l, cp.stringValue)
 }
 
 // Clone will create a copy of the this instance

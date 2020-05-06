@@ -2,7 +2,7 @@ package fans
 
 // Fan represents information about an attached fan
 type Fan struct {
-	// ActualValue is the current speed on a scale betweem 0 to 1
+	// ActualValue is the current speed on a scale betweem 0 to 1 or -1 if unknown
 	ActualValue float64 `json:"actualValue"`
 	// Blip value indicating how long the fan is supposed to run at 100%
 	// when turning it on to get it started (in s)

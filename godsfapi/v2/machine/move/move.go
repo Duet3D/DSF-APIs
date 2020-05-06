@@ -25,6 +25,8 @@ type Move struct {
 	SpeedFactor float64 `json:"speedFactor"`
 	// TravelAcceleration is maximum acceleration allowed while travelling (in mm/s^2)
 	TravelAcceleration float64 `json:"travelAcceleration"`
+	// VirtualPos is the virtual total extruder position
+	VirtualPos float64 `json:"virtualPos"`
 	// WorkspaceNumber is the index of the currently selected workspace
 	WorkspaceNumber int `json:"workspaceNumber"`
 }

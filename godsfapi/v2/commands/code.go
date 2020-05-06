@@ -57,8 +57,8 @@ const (
 type CodeType string
 
 const (
-	// Comment if this code is comment
-	Comment CodeType = "C"
+	// Comment if this code is whole line comment
+	Comment CodeType = "Q"
 	// GCode if this code is a G-Code
 	GCode = "G"
 	// MCode if this code is a M-Code

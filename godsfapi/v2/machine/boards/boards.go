@@ -32,6 +32,8 @@ type Board struct {
 	ShortName string `json:"shortName"`
 	// Supports12864 indicates if this board supports external 12864 displays
 	Supports12864 bool `json:"supports12864"`
+	// UniqueId of the board
+	UniqueId string `json:"uniqueId"`
 	// V12 represents 12V rail details of the main board in V or nil if unknown
 	V12 *MinMaxCurrent `json:"v12"`
 	// VIn represents input voltage details of the main board in V or nil if unknown

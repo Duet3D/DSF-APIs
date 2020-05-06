@@ -25,6 +25,8 @@ const (
 	SBC = "SBC"
 	// Daemon is the code channel for running triggers or config.g
 	Daemon = "Daemon"
+	// Aux2 is the code channel for the second UART port
+	Aux2 = "Aux2"
 	// AutoPause is the code channel that executes macros on power fail,
 	// heater faults and filament out
 	AutoPause = "AutoPause"
