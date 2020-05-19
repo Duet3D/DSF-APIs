@@ -1,5 +1,7 @@
 package state
 
+import "time"
+
 const (
 	// NoTool is the tool index if no tool is selected
 	NoTool = -1
@@ -37,6 +39,8 @@ type State struct {
 	RestorePoints []RestorePoint `json:"restorePoints"`
 	// Status the machine has currently
 	Status MachineStatus `json:"status"`
+	// Time is this internal date and time in RepRapFirmware or nil if unknown
+	Time *time.Time `json:"time"`
 	// UpTime is how long the mchine has been running (in s)
 	UpTime uint64 `json:"upTime"`
 }

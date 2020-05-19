@@ -30,6 +30,8 @@ type Board struct {
 	Name string `json:"name"`
 	/// ShortName is the short code of the board
 	ShortName string `json:"shortName"`
+	// State of this board
+	State BoardState `json:"state"`
 	// Supports12864 indicates if this board supports external 12864 displays
 	Supports12864 bool `json:"supports12864"`
 	// UniqueId of the board
@@ -49,3 +51,19 @@ type MinMaxCurrent struct {
 	// Maximum value encountered
 	Max float64 `json:"max"`
 }
+
+// BoardState is a representation of possible expansion board states
+type BoardState string
+
+const (
+	// Unknown state
+	Unknown BoardState = "unknown"
+	// Flashing new firmware
+	Flashing = "flashing"
+	// FlashFailed if flashing new firmware failed
+	FlashFailed = "flashingFailed"
+	// Resetting if the board is being reset
+	Resetting = "resetting"
+	// Running if the board is up and running
+	Running = "running"
+)
