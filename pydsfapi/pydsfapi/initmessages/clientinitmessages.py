@@ -18,9 +18,7 @@ clientinitmessages holds all messages a client can send to the server to initiat
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from enum import Enum
-
-# TODO: Move this to a common place for ServerInitMessage as well
-PROTOCOL_VERSION = 7
+from .serverinitmessage import ServerInitMessage
 
 
 class ConnectionMode(str, Enum):
@@ -39,7 +37,7 @@ class ClientInitMessage:
 
     def __init__(self, mode: ConnectionMode = ConnectionMode.UNKNOWN, **kwargs):
         self.mode = mode
-        self.version = PROTOCOL_VERSION
+        self.version = ServerInitMessage.PROTOCOL_VERSION
         for key, value in kwargs.items():
             self.__dict__[key] = value
 
