@@ -17,22 +17,24 @@ def intercept():
             # Wait for a code to arrive
             cde = intercept_connection.receive_code()
 
-            # Flush the code's channel to be sure we are being in sync with the machine
-            success = intercept_connection.flush(cde.channel)
-
-            # Flushing failed so we need to cancel our code
-            if not success:
-                print('Flush failed')
-                intercept_connection.cancel_code()
-                continue
-
             # Check for the type of the code
             if cde.type == code.CodeType.MCode and cde.MajorNumber == 1234:
 
+                # Flush the code's channel to be sure we are being in sync with the machine
+                success = intercept_connection.flush(cde.channel)
+
+                # Flushing failed so we need to cancel our code
+                if not success:
+                    print('Flush failed')
+                    intercept_connection.cancel_code()
+                    continue
+
                 # Do whatever needs to be done if this is the right code
                 print(cde, cde.flags)
+
                 # Resolve it so that DCS knows we took car of it
                 intercept_connection.resolve_code()
+
                 # Go fetching a new code
                 continue
 
