@@ -27,12 +27,16 @@ def intercept():
                 continue
 
             # Check for the type of the code
-            if cde.type == code.CodeType.MCode:
+            if cde.type == code.CodeType.MCode and cde.MajorNumber == 1234:
 
                 # Do whatever needs to be done if this is the right code
                 print(cde, cde.flags)
+                # Resolve it so that DCS knows we took car of it
+                intercept_connection.resolve_code()
+                # Go fetching a new code
+                continue
 
-            # We here ignore it so it will be continued to be processed
+            # We did not handle it so we ignore it and it will be continued to be processed
             intercept_connection.ignore_code()
     except:
         e = sys.exc_info()[0]
