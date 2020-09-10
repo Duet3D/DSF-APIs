@@ -36,3 +36,8 @@ const (
 	// DefaultChannel is the default channel to use
 	DefaultChannel CodeChannel = SBC
 )
+
+// AllChannels returns a slice containing all channels
+func AllChannels() []CodeChannel {
+	return []CodeChannel{HTTP, Telnet, File, USB, Aux, Trigger, Queue, LCD, SBC, Daemon, Aux2, AutoPause, Unknown}
+}

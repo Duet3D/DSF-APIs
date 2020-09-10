@@ -9,15 +9,18 @@ import (
 // SubscribeConnection is used to subscribe for object model updates
 type SubscribeConnection struct {
 	BaseConnection
-	Mode   initmessages.SubscriptionMode
+	Mode initmessages.SubscriptionMode
+	// Filter is the deprecated delimited filter expression
 	Filter string
+	// Filters is a list of filter expressions
+	Filters []string
 }
 
 // Connect will send a SubscribeInitMessage to the control server
-func (sc *SubscribeConnection) Connect(mode initmessages.SubscriptionMode, filter, socketPath string) error {
+func (sc *SubscribeConnection) Connect(mode initmessages.SubscriptionMode, filters []string, socketPath string) error {
 	sc.Mode = mode
-	sc.Filter = filter
-	sim := initmessages.NewSubscribeInitMessage(mode, filter)
+	sc.Filters = filters
+	sim := initmessages.NewSubscribeInitMessage(mode, filters)
 	return sc.BaseConnection.Connect(sim, socketPath)
 }
 

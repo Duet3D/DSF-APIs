@@ -7,6 +7,7 @@ import (
 	"github.com/Duet3D/DSF-APIs/godsfapi/v3/commands"
 	"github.com/Duet3D/DSF-APIs/godsfapi/v3/connection"
 	"github.com/Duet3D/DSF-APIs/godsfapi/v3/connection/initmessages"
+	"github.com/Duet3D/DSF-APIs/godsfapi/v3/machine/messages"
 	"github.com/Duet3D/DSF-APIs/godsfapi/v3/types"
 )
 
@@ -63,7 +64,7 @@ func command(code string) {
 func subscribe() {
 	sc := connection.SubscribeConnection{}
 	sc.Debug = true
-	err := sc.Connect(initmessages.SubscriptionModePatch, "", LocalSock)
+	err := sc.Connect(initmessages.SubscriptionModePatch, nil, LocalSock)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -95,7 +96,7 @@ func subscribe() {
 func intercept() {
 	ic := connection.InterceptConnection{}
 	ic.Debug = true
-	err := ic.Connect(initmessages.InterceptionModePre, LocalSock)
+	err := ic.Connect(initmessages.InterceptionModePre, nil, nil, false, LocalSock)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -109,19 +110,24 @@ func intercept() {
 		if err != nil {
 			log.Panic(err)
 		}
-		success, err := ic.Flush(c.Channel)
-		if err != nil {
-			log.Panic(err)
+		if c.Type == commands.MCode && c.IsMajorNumber(1234) {
+
+			success, err := ic.Flush(c.Channel)
+			if err != nil {
+				log.Panic(err)
+			}
+			if !success {
+				ic.CancelCode()
+				continue
+			}
+			cc := c.Clone()
+			cc.Flags |= commands.Asynchronous
+			ic.PerformCode(cc)
+			ic.ResolveCode(messages.Success, "")
+			// log.Println(c)
+		} else {
+			err = ic.IgnoreCode()
 		}
-		if !success {
-			ic.CancelCode()
-			continue
-		}
-		cc := c.Clone()
-		cc.Flags |= commands.Asynchronous
-		ic.PerformCode(cc)
-		// log.Println(c)
-		err = ic.IgnoreCode()
 		if err != nil {
 			log.Panic(err)
 		}

@@ -4,6 +4,7 @@ import (
 	"github.com/Duet3D/DSF-APIs/godsfapi/v3/commands"
 	"github.com/Duet3D/DSF-APIs/godsfapi/v3/connection/initmessages"
 	"github.com/Duet3D/DSF-APIs/godsfapi/v3/machine/messages"
+	"github.com/Duet3D/DSF-APIs/godsfapi/v3/types"
 )
 
 // InterceptConnection to intercept G/M/T-codes from the control server
@@ -19,13 +20,26 @@ import (
 // is obsolete if a commands.SimpleCode is inserted.
 type InterceptConnection struct {
 	BaseCommandConnection
-	Mode initmessages.InterceptionMode
+	Mode          initmessages.InterceptionMode
+	Channels      []types.CodeChannel
+	Filters       []string
+	PriorityCodes bool
 }
 
 // Connect sends a InterceptInitMessage to the control server
-func (ic *InterceptConnection) Connect(mode initmessages.InterceptionMode, socketPath string) error {
+// mode is the initmessages.InterceptionMode
+// channels is an optional list of input channels to intercept codes from (empty list = all)
+// filters to filter specific codes (see initmessages.InterceptInitMessage for details)
+// priorityCodes to enable codes with CodeFlags.IsPrioritized
+func (ic *InterceptConnection) Connect(mode initmessages.InterceptionMode, channels []types.CodeChannel, filters []string, priorityCodes bool, socketPath string) error {
 	ic.Mode = mode
-	iim := initmessages.NewInterceptInitMessage(mode)
+	if len(channels) == 0 {
+		channels = types.AllChannels()
+	}
+	ic.Channels = channels
+	ic.Filters = filters
+	ic.PriorityCodes = priorityCodes
+	iim := initmessages.NewInterceptInitMessage(mode, channels, filters, priorityCodes)
 	return ic.BaseConnection.Connect(iim, socketPath)
 }
 

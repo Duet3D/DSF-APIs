@@ -27,8 +27,8 @@ type Move struct {
 	TravelAcceleration float64 `json:"travelAcceleration"`
 	// VirtualPos is the virtual total extruder position
 	VirtualPos float64 `json:"virtualPos"`
-	// WorkspaceNumber is the index of the currently selected workspace
-	WorkspaceNumber int `json:"workspaceNumber"`
+	// WorkspaceNumber is the index of the currently selected workplace (0..8)
+	WorkplaceNumber int `json:"workplaceNumber"`
 }
 
 // MoveCalibration holds information about configured calibration options

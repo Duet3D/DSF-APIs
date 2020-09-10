@@ -8,6 +8,7 @@ import (
 	"github.com/Duet3D/DSF-APIs/godsfapi/v3/machine"
 	"github.com/Duet3D/DSF-APIs/godsfapi/v3/machine/httpendpoints"
 	"github.com/Duet3D/DSF-APIs/godsfapi/v3/machine/job"
+	"github.com/Duet3D/DSF-APIs/godsfapi/v3/machine/messages"
 	"github.com/Duet3D/DSF-APIs/godsfapi/v3/machine/usersessions"
 	"github.com/Duet3D/DSF-APIs/godsfapi/v3/types"
 )
@@ -18,8 +19,8 @@ type BaseCommandConnection struct {
 }
 
 // AddHttpEndpoint adds a new third-party HTTP endpoint in the format /machine/{ns}/{path}
-func (bcc *BaseCommandConnection) AddHttpEndpoint(t httpendpoints.HttpEndpointType, ns, path string, backlog uint64) (*HttpEndpointUnixSocket, error) {
-	r, err := bcc.PerformCommand(commands.NewAddHttpEndpoint(t, ns, path))
+func (bcc *BaseCommandConnection) AddHttpEndpoint(t httpendpoints.HttpEndpointType, ns, path string, isUploadRequest bool, backlog uint64) (*HttpEndpointUnixSocket, error) {
+	r, err := bcc.PerformCommand(commands.NewAddHttpEndpoint(t, ns, path, isUploadRequest))
 	if err != nil {
 		return nil, err
 	}
@@ -111,7 +112,7 @@ func (bcc *BaseCommandConnection) PerformSimpleCode(code string, channel types.C
 // In subscription mode this is the first command that has to be called once a connection has
 // been established
 func (bcc *BaseCommandConnection) GetMachineModel() (*machine.MachineModel, error) {
-	r, err := bcc.PerformCommand(commands.NewGetMachineModel())
+	r, err := bcc.PerformCommand(commands.NewGetObjectModel())
 	if err != nil {
 		return nil, err
 	}
@@ -122,7 +123,7 @@ func (bcc *BaseCommandConnection) GetMachineModel() (*machine.MachineModel, erro
 // GetSerializedMachineModel fetches the machine model as UTF-8 JSON
 func (bcc *BaseCommandConnection) GetSerializedMachineModel() (json.RawMessage, error) {
 	var raw json.RawMessage
-	err := bcc.Send(commands.NewGetMachineModel())
+	err := bcc.Send(commands.NewGetObjectModel())
 	if err != nil {
 		return raw, err
 	}
@@ -131,6 +132,41 @@ func (bcc *BaseCommandConnection) GetSerializedMachineModel() (json.RawMessage, 
 		return raw, err
 	}
 	return raw, nil
+}
+
+// LockMachineModel locks the machine model for read/write Access
+// It is MANDATORY to call UnlockMachineModel when write access has finished
+func (bcc *BaseCommandConnection) LockMachineModel() error {
+	_, err := bcc.PerformCommand(commands.NewLockObjectModel())
+	return err
+}
+
+// PatchObjectModel will apply a full patch to the object model. Use with care!
+func (bcc *BaseCommandConnection) PatchObjectModel(key, value string) error {
+	_, err := bcc.PerformCommand(commands.NewPatchObjectModel(key, value))
+	return err
+}
+
+// SetMachineModel sets a given property to a certain value. Make sure to lock the object
+// model before calling this.
+func (bcc *BaseCommandConnection) SetMachineModel(path, value string) (bool, error) {
+	r, err := bcc.PerformCommand(commands.NewSetObjectModel(path, value))
+	if err != nil {
+		return false, err
+	}
+	return r.IsSuccess(), nil
+}
+
+// SyncMachineModel waits for the full machine model to be updated from RepRapFirmware
+func (bcc *BaseCommandConnection) SyncMachineModel() error {
+	_, err := bcc.PerformCommand(commands.NewSyncObjectModel())
+	return err
+}
+
+// UnlockMachineModel unlocks the machine model
+func (bcc *BaseCommandConnection) UnlockMachineModel() error {
+	_, err := bcc.PerformCommand(commands.NewUnlockObjectModel())
+	return err
 }
 
 // ResolvePath resolves a RepRapFirmware-style file path to a real file path
@@ -142,31 +178,53 @@ func (bcc *BaseCommandConnection) ResolvePath(path string) (string, error) {
 	return r.GetResult().(string), nil
 }
 
-// LockMachineModel locks the machine model for read/write Access
-// It is MANDATORY to call UnlockMachineModel when write access has finished
-func (bcc *BaseCommandConnection) LockMachineModel() error {
-	_, err := bcc.PerformCommand(commands.NewLockMachineModel())
+// InstallPlugin to install or upgrade a plugin.
+// pluginFile is the absolute file path to the plugin ZIP bundle
+func (bcc *BaseCommandConnection) InstallPlugin(pluginFile string) error {
+	_, err := bcc.PerformCommand(commands.NewInstallPlugin(pluginFile))
 	return err
 }
 
-// SetMachineModel sets a given property to a certain value. Make sure to lock the object
-// model before calling this.
-func (bcc *BaseCommandConnection) SetMachineModel(path, value string) (bool, error) {
-	r, err := bcc.PerformCommand(commands.NewSetMachineModel(path, value))
-	if err != nil {
-		return false, err
-	}
-	return r.IsSuccess(), nil
-}
-
-// SyncMachineModel waits for the full machine model to be updated from RepRapFirmware
-func (bcc *BaseCommandConnection) SyncMachineModel() error {
-	_, err := bcc.PerformCommand(commands.NewSyncMachineModel())
+// SetPluginData sets custom plugin data in the object model
+// plugin is the name of the plugin and is optional. Leave empty if not needed
+func (bcc *BaseCommandConnection) SetPluginData(plugin, key, value string) error {
+	_, err := bcc.PerformCommand(commands.NewSetPluginData(plugin, key, value))
 	return err
 }
 
-// UnlockMachineModel unlocks the machine model
-func (bcc *BaseCommandConnection) UnlockMachineModel() error {
-	_, err := bcc.PerformCommand(commands.NewUnlockMachineModel())
+// StartPlugin starts a plugin
+func (bcc *BaseCommandConnection) StartPlugin(plugin string) error {
+	_, err := bcc.PerformCommand(commands.NewStartPlugin(plugin))
+	return err
+}
+
+// StopPlugin stops a plugin
+func (bcc *BaseCommandConnection) StopPlugin(plugin string) error {
+	_, err := bcc.PerformCommand(commands.NewStopPlugin(plugin))
+	return err
+}
+
+// UninstallPlugin uninstalls a plugin
+func (bcc *BaseCommandConnection) UninstallPlugin(plugin string) error {
+	_, err := bcc.PerformCommand(commands.NewUninstallPlugin(plugin))
+	return err
+}
+
+// Write an arbitrary generic message
+func (bcc *BaseCommandConnection) WriteTextMessage(mType messages.MessageType, message string, outputMessage, logMessage bool) error {
+	_, err := bcc.PerformCommand(commands.NewWriteMessage(mType, message, outputMessage, logMessage))
+	return err
+}
+
+// Write an arbitrary generic message from an existing messages.Message instance
+func (bcc *BaseCommandConnection) WriteMessage(message messages.Message, outputMessage, logMessage bool) error {
+	_, err := bcc.PerformCommand(commands.NewWriteMessage(message.Type, message.Content, outputMessage, logMessage))
+	return err
+}
+
+// SetUpdateStatus overrides the current machin status if a software update is in progress.
+// The object model may not be locked when this is called.
+func (bcc *BaseCommandConnection) SetUpdateStatus(updating bool) error {
+	_, err := bcc.PerformCommand(commands.NewSetUpdateStatus(updating))
 	return err
 }

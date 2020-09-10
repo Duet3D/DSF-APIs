@@ -1,8 +1,19 @@
 package commands
 
-import (
-	"github.com/Duet3D/DSF-APIs/godsfapi/v3/machine/messages"
-)
+import "github.com/Duet3D/DSF-APIs/godsfapi/v3/machine/messages"
+
+var cancel = NewBaseCommand("Cancel")
+var ignore = NewBaseCommand("Ignore")
+
+// NewCancel returns a Cancel command
+func NewCancel() *BaseCommand {
+	return cancel
+}
+
+// NewIgnore returns an Ignore command
+func NewIgnore() *BaseCommand {
+	return ignore
+}
 
 // Resolve the code to intercept and return the given message details for its completion.
 type Resolve struct {

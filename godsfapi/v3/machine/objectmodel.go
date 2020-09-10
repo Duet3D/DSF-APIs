@@ -12,6 +12,7 @@ import (
 	"github.com/Duet3D/DSF-APIs/godsfapi/v3/machine/messages"
 	"github.com/Duet3D/DSF-APIs/godsfapi/v3/machine/move"
 	"github.com/Duet3D/DSF-APIs/godsfapi/v3/machine/network"
+	"github.com/Duet3D/DSF-APIs/godsfapi/v3/machine/plugins"
 	"github.com/Duet3D/DSF-APIs/godsfapi/v3/machine/scanner"
 	"github.com/Duet3D/DSF-APIs/godsfapi/v3/machine/sensors"
 	"github.com/Duet3D/DSF-APIs/godsfapi/v3/machine/spindles"
@@ -48,6 +49,8 @@ type MachineModel struct {
 	Move move.Move `json:"move"`
 	// Network holds information about connected network adapters
 	Network network.Network `json:"network"`
+	// Plugins is the list of loaded SBC plugins
+	Plugins []plugins.Plugin
 	// Scanner holds information about the 3D scanner subsystem
 	Scanner scanner.Scanner `json:"scanner"`
 	// Sensors holds information about connected sensors including Z-probes and endstops

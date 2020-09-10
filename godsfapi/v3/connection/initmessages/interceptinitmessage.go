@@ -1,5 +1,7 @@
 package initmessages
 
+import "github.com/Duet3D/DSF-APIs/godsfapi/v3/types"
+
 // InterceptionMode represents supported interception modes
 type InterceptionMode string
 
@@ -25,12 +27,26 @@ type InterceptInitMessage struct {
 	BaseInitMessage
 	// InterceptionMode selects when to intercept codes.
 	InterceptionMode InterceptionMode
+	// Channels is a list of channels where codes may be intercepted
+	// If the list is empty, all available channels are used
+	Channels []types.CodeChannel
+	// Filters is a list of G/M/T-codes to filter or Q for comments
+	// This may only specify the code type and major/minor number (e.g. G1 or M105).
+	// Alternatively keyword types may be specified (e.g. if or elif).
+	// Asterisks are supported, tool (e.g. T*)
+	Filters []string
+	// PriorityCodes defines if priority codes may be intercepted (e.g. M112, M122, M999)
+	// See also CodeType.IsPrioritized
+	PriorityCodes bool
 }
 
 // NewInterceptInitMessage creates a new InterceptInitMessage for the given InterceptionMode
-func NewInterceptInitMessage(iMode InterceptionMode) ClientInitMessage {
+func NewInterceptInitMessage(iMode InterceptionMode, channels []types.CodeChannel, filters []string, priorityCodes bool) ClientInitMessage {
 	return &InterceptInitMessage{
 		BaseInitMessage:  NewBaseInitMessage(ConnectionModeIntercept),
 		InterceptionMode: iMode,
+		Channels:         channels,
+		Filters:          filters,
+		PriorityCodes:    priorityCodes,
 	}
 }
