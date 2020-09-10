@@ -20,6 +20,10 @@ def intercept():
             # Check for the type of the code
             if cde.type == code.CodeType.MCode and cde.MajorNumber == 1234:
 
+                # --------------- BEGIN FLUSH ---------------------
+                # Flushing is only necessary if the action below needs to be in sync with the machine
+                # at this point in the GCode stream. Otherwise it can an should be skipped
+
                 # Flush the code's channel to be sure we are being in sync with the machine
                 success = intercept_connection.flush(cde.channel)
 
@@ -28,18 +32,17 @@ def intercept():
                     print('Flush failed')
                     intercept_connection.cancel_code()
                     continue
+                # -------------- END FLUSH ------------------------
 
                 # Do whatever needs to be done if this is the right code
                 print(cde, cde.flags)
 
-                # Resolve it so that DCS knows we took car of it
+                # Resolve it so that DCS knows we took care of it
                 intercept_connection.resolve_code()
 
-                # Go fetching a new code
-                continue
-
-            # We did not handle it so we ignore it and it will be continued to be processed
-            intercept_connection.ignore_code()
+            else:
+                # We did not handle it so we ignore it and it will be continued to be processed
+                intercept_connection.ignore_code()
     except:
         e = sys.exc_info()[0]
         print("Closing connection: ", e)
