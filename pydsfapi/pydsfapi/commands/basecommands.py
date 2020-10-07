@@ -36,11 +36,15 @@ class BaseCommand:
 
 ACKNOWLEDGE = BaseCommand('Acknowledge')
 CANCEL = BaseCommand('Cancel')
-GET_MACHINE_MODEL = BaseCommand('GetMachineModel')
 IGNORE = BaseCommand('Ignore')
-SYNC_MACHINE_MODEL = BaseCommand('SyncMachineModel')
-LOCK_MACHINE_MODEL = BaseCommand('LockMachineModel')
-UNLOCK_MACHINE_MODEL = BaseCommand('UnlockMachineModel')
+GET_MACHINE_MODEL = BaseCommand('GetObjectModel')
+GET_OBJECT_MODEL = BaseCommand('GetObjectModel')
+SYNC_MACHINE_MODEL = BaseCommand('SyncObjectModel')
+SYNC_OBJECT_MODEL = BaseCommand('SyncObjectModel')
+LOCK_MACHINE_MODEL = BaseCommand('LockObjectModel')
+LOCK_OBJECT_MODEL = BaseCommand('LockObjectModel')
+UNLOCK_MACHINE_MODEL = BaseCommand('UnlockObjectModel')
+UNLOCK_OBJECT_MODEL = BaseCommand('UnlockObjectModel')
 
 
 class HttpEndpointType(str, Enum):
@@ -55,7 +59,8 @@ class HttpEndpointType(str, Enum):
     WebSocket = 'WebSocket'
 
 
-def add_http_endpoint(endpoint_type: HttpEndpointType, namespace: str, path: str):
+def add_http_endpoint(endpoint_type: HttpEndpointType, namespace: str, path: str,
+                      is_upload_request: bool):
     """
     Register a new HTTP endpoint via DuetWebServer.
     This will create a new HTTP endpoint under /machine/{Namespace}/{EndpointPath}.
@@ -63,11 +68,13 @@ def add_http_endpoint(endpoint_type: HttpEndpointType, namespace: str, path: str
     HTTP request is received. A plugin using this command has to open a new UNIX socket with
     the given path that DuetWebServer can connect to
     """
-    return BaseCommand('AddHttpEndpoint', **{
-        'EndpointType': endpoint_type,
-        'Namespace': namespace,
-        'Path': path
-    })
+    return BaseCommand(
+        'AddHttpEndpoint', **{
+            'EndpointType': endpoint_type,
+            'Namespace': namespace,
+            'Path': path,
+            'IsUploadRequest': is_upload_request,
+        })
 
 
 def remove_http_endpoint(endpoint_type: HttpEndpointType, namespace: str, path: str):
@@ -143,12 +150,63 @@ def simple_code(code: str, channel: CodeChannel):
     return BaseCommand('SimpleCode', **{'Code': code, 'Channel': channel})
 
 
+def patch_object_mode(key: str, patch: str):
+    """
+    Apply a full patch tot he object model. May be used only in non-SPI mode
+    """
+    return BaseCommand('PatchObjectModel', **{'Key': key, 'Patch': patch})
+
+
 def set_machine_model(property_path: str, value: str):
     """
     Set an atomic property in the machine model.
     Make sure to acquire the read/write lock first! Returns true if the field could be updated
     """
-    return BaseCommand('SetMachineModel', **{'PropertyPath': property_path, 'Value': value})
+    return BaseCommand('SetObjectModel', **{'PropertyPath': property_path, 'Value': value})
+
+
+def set_update_status(updating: bool):
+    """
+    Override the current status as reported by the object model when
+    performing a software update.
+    """
+    return BaseCommand('SetUpdateStatus', **{'Updating': updating})
+
+
+def install_plugin(plugin_file: str):
+    """
+    Install or upgrade a plugin
+    """
+    return BaseCommand('InstallPlugin', **{'PluginFile': plugin_file})
+
+
+def set_plugin_data(plugin: str, key: str, value: str):
+    """
+    Set custom plugin data in the object model.
+    May be used to update only the own plygin data unless the plugin has the ManagePlugins permission
+    """
+    return BaseCommand('SetPluginData', **{'Plugin': plugin, 'Key': key, 'Value': value})
+
+
+def start_plugin(plugin: str):
+    """
+    Start a plugin
+    """
+    return BaseCommand('StartPlugin', **{'Plugin': plugin})
+
+
+def stop_plugin(plugin: str):
+    """
+    Stop a plugin
+    """
+    return BaseCommand('StopPlugin', **{'Plugin': plugin})
+
+
+def uninstall_plugin(plugin: str):
+    """
+    Uninstall a plugin
+    """
+    return BaseCommand('UninstallPlugin', **{'Plugin': plugin})
 
 
 class MessageType(IntEnum):

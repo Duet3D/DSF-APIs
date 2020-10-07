@@ -37,3 +37,6 @@ class CodeChannel(str, Enum):
     Unknown = 'Unknown'
 
     DEFAULT_CHANNEL = SBC
+
+    def list():
+        return list(map(lambda cc: cc.value, CodeChannel))

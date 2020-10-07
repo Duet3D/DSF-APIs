@@ -40,7 +40,6 @@ class TaskCanceledException(Exception):
 
 class InternalServerException(Exception):
     """Exception returned by the server for an arbitrary problem"""
-
     def __init__(self, command, error_type: str, error_message: str):
         super().__init__('Internal Server Exception')
         self.command = command
@@ -73,7 +72,6 @@ class ReceivedHttpRequest:
 
 class HttpEndpointConnection:
     """Connection class for dealing with requests received from a custom HTTP endpoint"""
-
     def __init__(self, reader, writer, is_websocket: bool, debug: bool = False):
         """Constructor for a new connection dealing with a single HTTP endpoint request"""
         self.reader = reader
@@ -134,7 +132,6 @@ class HttpEndpointConnection:
 
 class HttpEndpointUnixSocket:
     """Class for dealing with custom HTTP endpoints"""
-
     def __init__(self,
                  endpoint_type: basecommands.HttpEndpointType,
                  namespace: str,
@@ -214,7 +211,6 @@ class BaseConnection:
     Base class for connections that access the control server via the Duet API
     using a UNIX socket
     """
-
     def __init__(self, debug: bool = False):
         self.debug = debug
         self.socket = None
@@ -259,8 +255,7 @@ class BaseConnection:
         if response.error_type == 'TaskCanceledException':
             raise TaskCanceledException(response.error_message)
 
-        raise InternalServerException(
-            command, response.error_type, response.error_message)
+        raise InternalServerException(command, response.error_type, response.error_message)
 
     def send(self, msg):
         """Serialize an arbitrary object into JSON and send it to the server plus NL"""
@@ -289,7 +284,6 @@ class BaseConnection:
 
 class BaseCommandConnection(BaseConnection):
     """Base connection class for sending commands to the control server"""
-
     def flush(self, channel: codechannel.CodeChannel = codechannel.CodeChannel.SBC):
         """Wait for all pending codes of the given channel to finish"""
         return self.perform_command(basecommands.flush(channel))
@@ -298,10 +292,11 @@ class BaseCommandConnection(BaseConnection):
                           endpoint_type: basecommands.HttpEndpointType,
                           namespace: str,
                           path: str,
+                          is_upload_request: bool = False,
                           backlog: int = DEFAULT_BACKLOG):
         """Add a new third-party HTTP endpoint in the format /machine/{ns}/{path}"""
         res = self.perform_command(
-            basecommands.add_http_endpoint(endpoint_type, namespace, path))
+            basecommands.add_http_endpoint(endpoint_type, namespace, path, is_upload_request))
         socket_path = res.result
         return HttpEndpointUnixSocket(endpoint_type, namespace, path, socket_path, backlog,
                                       self.debug)
@@ -315,8 +310,7 @@ class BaseCommandConnection(BaseConnection):
         if origin_port is None:
             origin_port = os.getpid()
 
-        res = self.perform_command(basecommands.add_user_session(
-            access, tpe, origin, origin_port))
+        res = self.perform_command(basecommands.add_user_session(access, tpe, origin, origin_port))
         return int(res.result)
 
     def get_file_info(self, file_name: str):
@@ -326,29 +320,68 @@ class BaseCommandConnection(BaseConnection):
         return res.result
 
     def get_machine_model(self):
+        """
+        Retrieve the full object model of the machine.
+
+        Deprecated: use get_object_model instead.
+        """
+        return self.get_object_model()
+
+    def get_object_model(self):
         """Retrieve the full object model of the machine."""
-        res = self.perform_command(
-            basecommands.GET_MACHINE_MODEL, machinemodel.MachineModel)
+        res = self.perform_command(basecommands.GET_OBJECT_MODEL, machinemodel.MachineModel)
         return res.result
 
     def get_serialized_machine_model(self):
+        """
+        Optimized method to directly query the machine model UTF-8 JSON.
+
+        Deprecated: use get_serialized_object_model instead.
+        """
+        return self.get_serialized_object_model()
+
+    def get_serialized_object_model(self):
         """Optimized method to directly query the machine model UTF-8 JSON"""
-        self.send(basecommands.GET_MACHINE_MODEL)
+        self.send(basecommands.GET_OBJECT_MODEL)
         return self.receive_json()
+
+    def install_plugin(self, plugin_file: str):
+        """Install or upgrade a plugin"""
+        res = self.perform_command(basecommands.install_plugin(plugin_file))
+        return res.result
 
     def lock_machine_model(self):
         """
         Lock the machine model for read/write access.
-        It is MANDATORY to call unlock_machine_model when write access has finished
+        It is MANDATORY to call unlock_object_model when write access has finished
+
+        Deprecated: use lock_object_model instead
         """
-        return self.perform_command(basecommands.LOCK_MACHINE_MODEL)
+        return self.lock_object_model()
+
+    def lock_object_model(self):
+        """
+        Lock the machine model for read/write access.
+        It is MANDATORY to call unlock_object_model when write access has finished
+        """
+        return self.perform_command(basecommands.LOCK_OBJECT_MODEL)
+
+    def patch_object_model(self, key: str, patch):
+        """
+        Apply a full patch to the object model. Use with care!
+        """
+        res = self.perform_command(basecommands.patch_object_model(key, patch))
+        return res.result
 
     def perform_code(self, cde: code.Code):
         """Execute an arbitrary pre-parsed code"""
         res = self.perform_command(cde, result.CodeResult)
         return res.result
 
-    def perform_simple_code(self, cde: str, channel: codechannel.CodeChannel = codechannel.CodeChannel.DEFAULT_CHANNEL):
+    def perform_simple_code(
+            self,
+            cde: str,
+            channel: codechannel.CodeChannel = codechannel.CodeChannel.DEFAULT_CHANNEL):
         """Execute an arbitrary G/M/T-code in text form and return the result as a string"""
         res = self.perform_command(basecommands.simple_code(cde, channel))
         return res.result
@@ -362,8 +395,7 @@ class BaseCommandConnection(BaseConnection):
 
     def remove_user_session(self, session_id: int):
         """Remove an existing HTTP endpoint"""
-        res = self.perform_command(
-            basecommands.remove_user_session(session_id))
+        res = self.perform_command(basecommands.remove_user_session(session_id))
         return res.result
 
     def resolve_path(self, path: str):
@@ -374,21 +406,76 @@ class BaseCommandConnection(BaseConnection):
         """
         Set a given property to a certain value.
         Make sure to lock the object model before calling this
+
+        Deprecated: use set_object_model instead
         """
-        return self.perform_command(basecommands.set_machine_model(path, value))
+        return self.set_object_model(path, value)
+
+    def set_object_model(self, path: str, value: str):
+        """
+        Set a given property to a certain value.
+        Make sure to lock the object model before calling this
+        """
+        return self.perform_command(basecommands.set_object_model(path, value))
+
+    def set_plugin_data(self, key: str, value, plugin: str = None):
+        """Set custom plugin data in the object model"""
+        res = self.perform_command(basecommands.set_plugin_data(key, value, plugin))
+        return res.result
+
+    def set_update_status(self, is_updating: bool):
+        """Override the current machin staeus if a software update is in progress"""
+        res = self.perform_command(basecommands.set_update_status(is_updating))
+        return res.result
+
+    def start_plugin(self, plugin: str):
+        """Start a plugin"""
+        res = self.perform_command(basecommands.start_plugin(plugin))
+        return res.result
+
+
+    def stop_plugin(self, plugin: str):
+        """Stop a plugin"""
+        res = self.perform_command(basecommands.stop_plugin(plugin))
+        return res.result
 
     def sync_machine_model(self):
-        """Wait for the full machine model to be updated from RepRapFirmware"""
-        return self.perform_command(basecommands.SYNC_MACHINE_MODEL)
+        """
+        Wait for the full object model to be updated from RepRapFirmware.
+
+        Deprecated: use sync_object_model instead
+        """
+        return self.sync_object_model()
+
+    def sync_object_model(self):
+        """Wait for the full object model to be updated from RepRapFirmware"""
+        return self.perform_command(basecommands.SYNC_OBJECT_MODEL)
+
+    def uninstall_plugin(self, plugin: str):
+        """Uninstall a plugin"""
+        res = self.perform_command(basecommands.uninstall_plugin(plugin))
+        return res.result
 
     def unlock_machine_model(self):
-        """Unlock the machine model again"""
-        return self.perform_command(basecommands.UNLOCK_MACHINE_MODEL)
+        """
+        Unlock the object model again.
+
+        Deprecated: use unlock_object_model instead
+        """
+        return self.unlock_object_model()
+
+    def unlock_object_model(self):
+        """Unlock the object model again"""
+        return self.perform_command(basecommands.UNLOCK_OBJECT_MODEL)
+
+    def write_message(self, message_type: MessageType, message: str, output_message: bool = True, log_message: bool = False):
+        """Write an arbitrary message"""
+        res = self.perform_command(basecommands.write_message(message_type, message, output_message, log_message))
+        return res.result
 
 
 class CommandConnection(BaseCommandConnection):
     """Connection class for sending commands to the control server"""
-
     def connect(self, socket_path: str = FULL_SOCKET_PATH):
         """Establishes a connection to the given UNIX socket file"""
         return super().connect(clientinitmessages.command_init_message(), socket_path)
@@ -396,14 +483,25 @@ class CommandConnection(BaseCommandConnection):
 
 class InterceptConnection(BaseCommandConnection):
     """Connection class for intercepting G/M/T-codes from the control server"""
-
-    def __init__(self, interception_mode: clientinitmessages.InterceptionMode, debug: bool = False):
+    def __init__(self,
+                 interception_mode: clientinitmessages.InterceptionMode,
+                 channels=None,
+                 filters=None,
+                 priority_codes: bool = False,
+                 debug: bool = False):
         super().__init__(debug)
         self.interception_mode = interception_mode
+        if channels is not None:
+            self.channels = channels
+        else:
+            self.channels = codechannel.CodeChannel.list()
+        self.filters = filters
+        self.priority_codes = priority_codes
 
     def connect(self, socket_path: str = FULL_SOCKET_PATH):
         """Establishes a connection to the given UNIX socket file"""
-        iim = clientinitmessages.intercept_init_message(self.interception_mode)
+        iim = clientinitmessages.intercept_init_message(self.interception_mode, self.channels,
+                                                        self.filters, self.priority_codes)
 
         return super().connect(iim, socket_path)
 
@@ -429,19 +527,19 @@ class InterceptConnection(BaseCommandConnection):
 
 class SubscribeConnection(BaseConnection):
     """Connection class for subscribing to model updates"""
-
     def __init__(self,
                  subscription_mode: clientinitmessages.SubscriptionMode,
                  filter_str: str = "",
+                 filter_list = None,
                  debug: bool = False):
         super().__init__(debug)
         self.subscription_mode = subscription_mode
         self.filter_str = filter_str
+        self.filter_list = filter_list
 
     def connect(self, socket_path: str = FULL_SOCKET_PATH):
         """Establishes a connection to the given UNIX socket file"""
-        sim = clientinitmessages.subscibe_init_message(
-            self.subscription_mode, self.filter_str)
+        sim = clientinitmessages.subscibe_init_message(self.subscription_mode, self.filter_str, self.filter_list)
 
         return super().connect(sim, socket_path)
 

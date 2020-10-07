@@ -3,7 +3,7 @@ package initmessages
 const (
 	// ProcotolVersion is the version the server needs to have to be compatible with
 	// this client
-	ProtocolVersion = 8
+	ProtocolVersion = 9
 )
 
 // ServerInitMessage is sent by the server to the client in JSON format once a connection

@@ -34,7 +34,6 @@ class ClientInitMessage:
     An instance of this class is sent from the client to the server as a response
     to the ServerInitMessage. It allows a client to select the connection mode.
     """
-
     def __init__(self, mode: ConnectionMode = ConnectionMode.UNKNOWN, **kwargs):
         self.mode = mode
         self.version = ServerInitMessage.PROTOCOL_VERSION
@@ -49,9 +48,16 @@ class InterceptionMode(str, Enum):
     EXECUTED = 'Executed'
 
 
-def intercept_init_message(intercept_mode: InterceptionMode):
+def intercept_init_message(intercept_mode: InterceptionMode, channels, filters,
+                           priority_codes: bool):
     """Enter interception mode"""
-    return ClientInitMessage(ConnectionMode.INTERCEPT, **{'InterceptionMode': intercept_mode})
+    return ClientInitMessage(
+        ConnectionMode.INTERCEPT, **{
+            'InterceptionMode': intercept_mode,
+            'Channels': channels,
+            'Filters': filters,
+            'PriorityCodes': priority_codes,
+        })
 
 
 def command_init_message():
@@ -65,9 +71,10 @@ class SubscriptionMode(str, Enum):
     PATCH = 'Patch'
 
 
-def subscibe_init_message(subscription_mode: SubscriptionMode, filter_string: str):
+def subscibe_init_message(subscription_mode: SubscriptionMode, filter_string: str, filter_list):
     """Enter subscription mode"""
     return ClientInitMessage(ConnectionMode.SUBSCRIBE, **{
         'SubscriptionMode': subscription_mode,
-        'Filter': filter_string
+        'Filter': filter_string,
+        'Filters': filter_list,
     })
