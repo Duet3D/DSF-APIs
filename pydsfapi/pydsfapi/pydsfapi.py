@@ -276,7 +276,16 @@ class BaseConnection:
 
     def receive_json(self):
         """Receive the JSON response from the server"""
-        json_string = self.socket.recv(32 * 1024).decode('utf8')
+        BUFF_SIZE = 4096  # 4 KiB
+        data = b''
+        while True:
+            part = self.socket.recv(BUFF_SIZE)
+            data += part
+            # either 0 or end of data
+            if len(part) < BUFF_SIZE:
+                break
+        json_string = data.decode('utf8')
+
         if self.debug:
             print('recv: {0}'.format(json_string))
         return json_string
@@ -433,7 +442,6 @@ class BaseCommandConnection(BaseConnection):
         res = self.perform_command(basecommands.start_plugin(plugin))
         return res.result
 
-
     def stop_plugin(self, plugin: str):
         """Stop a plugin"""
         res = self.perform_command(basecommands.stop_plugin(plugin))
@@ -468,9 +476,14 @@ class BaseCommandConnection(BaseConnection):
         """Unlock the object model again"""
         return self.perform_command(basecommands.UNLOCK_OBJECT_MODEL)
 
-    def write_message(self, message_type: MessageType, message: str, output_message: bool = True, log_message: bool = False):
+    def write_message(self,
+                      message_type: MessageType,
+                      message: str,
+                      output_message: bool = True,
+                      log_message: bool = False):
         """Write an arbitrary message"""
-        res = self.perform_command(basecommands.write_message(message_type, message, output_message, log_message))
+        res = self.perform_command(
+            basecommands.write_message(message_type, message, output_message, log_message))
         return res.result
 
 
@@ -530,7 +543,7 @@ class SubscribeConnection(BaseConnection):
     def __init__(self,
                  subscription_mode: clientinitmessages.SubscriptionMode,
                  filter_str: str = "",
-                 filter_list = None,
+                 filter_list=None,
                  debug: bool = False):
         super().__init__(debug)
         self.subscription_mode = subscription_mode
@@ -539,7 +552,8 @@ class SubscribeConnection(BaseConnection):
 
     def connect(self, socket_path: str = FULL_SOCKET_PATH):
         """Establishes a connection to the given UNIX socket file"""
-        sim = clientinitmessages.subscibe_init_message(self.subscription_mode, self.filter_str, self.filter_list)
+        sim = clientinitmessages.subscibe_init_message(self.subscription_mode, self.filter_str,
+                                                       self.filter_list)
 
         return super().connect(sim, socket_path)
 
