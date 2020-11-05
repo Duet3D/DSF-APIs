@@ -281,7 +281,16 @@ class BaseConnection:
 
     def receive_json(self):
         """Receive the JSON response from the server"""
-        json_string = self.socket.recv(32 * 1024).decode('utf8')
+        BUFF_SIZE = 4096  # 4 KiB
+        data = b''
+        while True:
+            part = self.socket.recv(BUFF_SIZE)
+            data += part
+            # either 0 or end of data
+            if len(part) < BUFF_SIZE:
+                break
+        json_string = data.decode('utf8')
+
         if self.debug:
             print('recv: {0}'.format(json_string))
         return json_string
