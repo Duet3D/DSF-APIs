@@ -219,6 +219,7 @@ class BaseConnection:
         self.debug = debug
         self.socket = None
         self.id = None
+        self.input = ''
 
     def connect(self, init_message: clientinitmessages.ClientInitMessage, socket_path: str):
         """Establishes a connection to the given UNIX socket file"""
@@ -264,7 +265,7 @@ class BaseConnection:
 
     def send(self, msg):
         """Serialize an arbitrary object into JSON and send it to the server plus NL"""
-        json_string = json.dumps(msg, default=lambda o: o.__dict__)
+        json_string = json.dumps(msg, separators=(',', ':'), default=lambda o: o.__dict__)
         if self.debug:
             print('send: {0}'.format(json_string))
         self.socket.sendall(json_string.encode('utf8'))
@@ -281,19 +282,62 @@ class BaseConnection:
 
     def receive_json(self):
         """Receive the JSON response from the server"""
-        BUFF_SIZE = 4096  # 4 KiB
-        data = b''
-        while True:
-            part = self.socket.recv(BUFF_SIZE)
-            data += part
-            # either 0 or end of data
-            if len(part) < BUFF_SIZE:
-                break
-        json_string = data.decode('utf8')
+
+        json_string = self.input
+
+        # There might be a full object waiting in the buffer
+        end_index = self.get_json_object_end_index(json_string)
+        if end_index > 1:
+            # Save whatever is left in the buffer
+            self.input = json_string[end_index:]
+            # Limit to the first full JSON object
+            json_string = json_string[:end_index]
+
+        else:
+            found = False
+            while not found:
+                # Refill the buffer and check again
+                BUFF_SIZE = 4096  # 4 KiB
+                data = b''
+                while True:
+                    part = self.socket.recv(BUFF_SIZE)
+                    data += part
+                    # either 0 or end of data
+                    if len(part) < BUFF_SIZE:
+                        break
+                json_string += data.decode('utf8')
+
+                end_index = self.get_json_object_end_index(json_string)
+                if end_index > 1:
+                    # Save whatever is left in the buffer
+                    self.input = json_string[end_index:]
+                    # Limit to the first full JSON object
+                    json_string = json_string[:end_index]
+                    found = True
 
         if self.debug:
             print('recv: {0}'.format(json_string))
         return json_string
+
+    def get_json_object_end_index(self, json: str):
+        """Return the end index of the next full JSON object in the string"""
+        count = 0
+        index = 0
+        while index < len(json):
+            token = json[index]
+            if token == '{':  # Found opening curly brace
+                count += 1
+            elif token == '}':  # Found closing curly brace
+                count -= 1
+
+            if count < 0:  # Unbalanced curly braces - incomplete input?
+                return -1
+            if count == 0:  # Found a complete object
+                return index + 1
+
+            index += 1
+
+        return -1  # Nothing here
 
 
 class BaseCommandConnection(BaseConnection):
