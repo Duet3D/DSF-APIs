@@ -82,7 +82,7 @@ def remove_http_endpoint(endpoint_type: HttpEndpointType, namespace: str, path: 
     Remove an existing HTTP endpoint.
     Returns true if the endpoint could be successfully removed
     """
-    return BaseCommand('RemoveHttpEndpoint'**{
+    return BaseCommand('RemoveHttpEndpoint', **{
         'EndpointType': endpoint_type,
         'Namespace': namespace,
         'Path': path
@@ -150,16 +150,16 @@ def simple_code(code: str, channel: CodeChannel):
     return BaseCommand('SimpleCode', **{'Code': code, 'Channel': channel})
 
 
-def patch_object_mode(key: str, patch: str):
+def patch_object_model(key: str, patch: str):
     """
     Apply a full patch tot he object model. May be used only in non-SPI mode
     """
     return BaseCommand('PatchObjectModel', **{'Key': key, 'Patch': patch})
 
 
-def set_machine_model(property_path: str, value: str):
+def set_object_model(property_path: str, value: str):
     """
-    Set an atomic property in the machine model.
+    Set an atomic property in the object model.
     Make sure to acquire the read/write lock first! Returns true if the field could be updated
     """
     return BaseCommand('SetObjectModel', **{'PropertyPath': property_path, 'Value': value})
@@ -214,6 +214,14 @@ class MessageType(IntEnum):
     Success = 0
     Warning = 1
     Error = 2
+
+
+def write_message(message_type: MessageType, content: str, output_message: bool, log_message: bool):
+    """
+    Write an arbitrary generic message
+    """
+    return BaseCommand('WriteMessage', **{'Type': message_type, 'Content': content, 'OutputMessage': output_message,
+                                          'LogMessage': log_message})
 
 
 def resolve_code(rtype: MessageType, content: str):

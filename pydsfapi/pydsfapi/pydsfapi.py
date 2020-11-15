@@ -314,12 +314,13 @@ class BaseConnection:
             print('recv: {0}'.format(json_string))
         return json_string
 
-    def get_json_object_end_index(self, json: str):
+    @staticmethod
+    def get_json_object_end_index(json_string: str):
         """Return the end index of the next full JSON object in the string"""
         count = 0
         index = 0
-        while index < len(json):
-            token = json[index]
+        while index < len(json_string):
+            token = json_string[index]
             if token == '{':  # Found opening curly brace
                 count += 1
             elif token == '}':  # Found closing curly brace
@@ -596,7 +597,7 @@ class SubscribeConnection(BaseConnection):
 
     def connect(self, socket_path: str = FULL_SOCKET_PATH):
         """Establishes a connection to the given UNIX socket file"""
-        sim = clientinitmessages.subscibe_init_message(self.subscription_mode, self.filter_str,
+        sim = clientinitmessages.subscribe_init_message(self.subscription_mode, self.filter_str,
                                                        self.filter_list)
 
         return super().connect(sim, socket_path)

@@ -123,8 +123,7 @@ class Code(BaseCommand):
         if self.type == CodeType.Comment:
             return ';{0}'.format(self.comment)
 
-        str_list = []
-        str_list.append(self.short_str())
+        str_list = [self.short_str()]
 
         for param in self.parameters:
             str_list.append(' {0}'.format(param))

@@ -27,23 +27,3 @@ class MachineModel(dict):
     def from_json(cls, data):
         """Deserialize an instance of this class from JSON deserialized dictionary"""
         return cls(**data)
-
-    def __getitem__(self, key):
-        """Return the item with key key. Returns None if key is not present"""
-
-        # Simple route
-        if '.' not in key:
-            return dict.__getitem__(self, key)
-
-        parts = key.split('.')
-        item = None
-        try:
-            item = dict.__getitem__(self, parts.pop(0))
-        except KeyError:
-            return None
-        for part in parts:
-            try:
-                item = item[part]
-            except KeyError:
-                return None
-

@@ -110,7 +110,7 @@ class CodeParameter(json.JSONEncoder):
             self.__parsed_value = value
             return
         elif self.is_driver_id:
-            drivers = [DriverId(as_str=value) for value in self_string_value.split(':')]
+            drivers = [DriverId(as_str=value) for value in self.string_value.split(':')]
 
             if len(drivers) == 1:
                 self.__parsed_value = drivers[0]
@@ -119,7 +119,7 @@ class CodeParameter(json.JSONEncoder):
             return
 
         value = value.strip()
-        # Empty parameters are repesented as integers with the value 0 (e.g. G92 XY => G92 X0 Y0)
+        # Empty parameters are represented as integers with the value 0 (e.g. G92 XY => G92 X0 Y0)
         if not value:
             self.__parsed_value = 0
         elif value.startswith('{}') and value.endswith('}'):  # It is an expression
@@ -148,7 +148,7 @@ class CodeParameter(json.JSONEncoder):
         if self.is_expression:
             return
         try:
-            drivers = [DriverId(as_str=value) for value in self_string_value.split(':')]
+            drivers = [DriverId(as_str=value) for value in self.string_value.split(':')]
         except CodeParserException as e:
             raise CodeParserException(e + ' from {0} parameter'.format(self.letter))
 

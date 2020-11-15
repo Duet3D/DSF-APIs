@@ -71,7 +71,7 @@ class SubscriptionMode(str, Enum):
     PATCH = 'Patch'
 
 
-def subscibe_init_message(subscription_mode: SubscriptionMode, filter_string: str, filter_list):
+def subscribe_init_message(subscription_mode: SubscriptionMode, filter_string: str, filter_list):
     """Enter subscription mode"""
     return ClientInitMessage(ConnectionMode.SUBSCRIBE, **{
         'SubscriptionMode': subscription_mode,

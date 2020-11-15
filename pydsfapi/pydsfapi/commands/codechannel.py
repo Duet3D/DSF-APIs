@@ -38,5 +38,6 @@ class CodeChannel(str, Enum):
 
     DEFAULT_CHANNEL = SBC
 
+    @staticmethod
     def list():
         return list(map(lambda cc: cc.value, CodeChannel))

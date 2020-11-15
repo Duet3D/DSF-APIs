@@ -6,6 +6,7 @@ from pydsfapi import pydsfapi
 from pydsfapi.commands import basecommands, code
 from pydsfapi.initmessages.clientinitmessages import InterceptionMode, SubscriptionMode
 
+
 def intercept():
     """Example of intercepting and interacting with codes"""
     intercept_connection = pydsfapi.InterceptConnection(InterceptionMode.PRE, debug=True)
@@ -70,7 +71,7 @@ def subscribe():
     try:
         # Get the complete model once
         machine_model = subscribe_connection.get_machine_model()
-        print(machine_model.__dict__)
+        print(machine_model)
 
         # Get 10 updates
         for i in range(0, 10):
