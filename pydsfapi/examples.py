@@ -18,7 +18,7 @@ def intercept():
             cde = intercept_connection.receive_code()
 
             # Check for the type of the code
-            if cde.type == code.CodeType.MCode and cde.MajorNumber == 1234:
+            if cde.type == code.CodeType.MCode and cde.majorNumber == 1234:
 
                 # --------------- BEGIN FLUSH ---------------------
                 # Flushing is only necessary if the action below needs to be in sync with the machine
