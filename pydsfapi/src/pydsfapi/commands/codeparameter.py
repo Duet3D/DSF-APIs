@@ -99,7 +99,7 @@ class CodeParameter(json.JSONEncoder):
         return cls(letter, value, isDriverId=isDriverId)
 
     def __init__(
-        self, letter: chr, value, isString: bool = None, isDriverId: bool = None
+        self, letter: str, value, isString: bool = None, isDriverId: bool = None
     ):
         """
         Creates a new CodeParameter instance and parses value to a native data type

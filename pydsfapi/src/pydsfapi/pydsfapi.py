@@ -23,6 +23,8 @@ import json
 import os
 import socket
 from concurrent.futures import ThreadPoolExecutor
+from typing import Optional
+
 from .commands import responses, basecommands, code, result, codechannel
 from .commands.basecommands import MessageType
 from .initmessages import serverinitmessage, clientinitmessages
@@ -230,7 +232,7 @@ class BaseConnection:
 
     def __init__(self, debug: bool = False):
         self.debug = debug
-        self.socket = None
+        self.socket: Optional[socket.socket] = None
         self.id = None
         self.input = ""
 
@@ -518,7 +520,7 @@ class BaseCommandConnection(BaseConnection):
         """
         return self.perform_command(basecommands.set_object_model(path, value))
 
-    def set_plugin_data(self, key: str, value, plugin: str = None):
+    def set_plugin_data(self, key: str, value: str, plugin: str):
         """Set custom plugin data in the object model"""
         res = self.perform_command(basecommands.set_plugin_data(key, value, plugin))
         return res.result
@@ -586,7 +588,7 @@ class BaseCommandConnection(BaseConnection):
 class CommandConnection(BaseCommandConnection):
     """Connection class for sending commands to the control server"""
 
-    def connect(self, socket_path: str = FULL_SOCKET_PATH):
+    def connect(self, socket_path: str = FULL_SOCKET_PATH):  # type: ignore
         """Establishes a connection to the given UNIX socket file"""
         return super().connect(clientinitmessages.command_init_message(), socket_path)
 
@@ -611,7 +613,7 @@ class InterceptConnection(BaseCommandConnection):
         self.filters = filters
         self.priority_codes = priority_codes
 
-    def connect(self, socket_path: str = FULL_SOCKET_PATH):
+    def connect(self, socket_path: str = FULL_SOCKET_PATH):  # type: ignore
         """Establishes a connection to the given UNIX socket file"""
         iim = clientinitmessages.intercept_init_message(
             self.interception_mode, self.channels, self.filters, self.priority_codes
@@ -656,12 +658,11 @@ class SubscribeConnection(BaseConnection):
         self.filter_str = filter_str
         self.filter_list = filter_list
 
-    def connect(self, socket_path: str = FULL_SOCKET_PATH):
+    def connect(self, socket_path: str = FULL_SOCKET_PATH):  # type: ignore
         """Establishes a connection to the given UNIX socket file"""
         sim = clientinitmessages.subscribe_init_message(
             self.subscription_mode, self.filter_str, self.filter_list
         )
-
         return super().connect(sim, socket_path)
 
     def get_machine_model(self):

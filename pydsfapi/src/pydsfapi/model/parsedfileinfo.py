@@ -19,6 +19,7 @@ by RepRapFirmware.
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from datetime import datetime
+from typing import List
 
 
 class ParsedFileInfo:
@@ -37,7 +38,7 @@ class ParsedFileInfo:
         height: float,
         firstLayerHeight: float,
         numLayers: int,
-        filament: [float],
+        filament: List[float],
         generatedBy: str,
         printTime: int,
         simulatedTime: int,

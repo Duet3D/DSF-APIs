@@ -18,6 +18,8 @@ This module contains all basic commands to be sent to the server.
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from enum import IntEnum, Enum
+from typing import Optional
+
 from .codechannel import CodeChannel
 
 
@@ -197,7 +199,7 @@ def install_plugin(plugin_file: str):
 def set_plugin_data(plugin: str, key: str, value: str):
     """
     Set custom plugin data in the object model.
-    May be used to update only the own plygin data unless the plugin has the ManagePlugins permission
+    May be used to update only the own plugin data unless the plugin has the ManagePlugins permission
     """
     return BaseCommand(
         "SetPluginData", **{"Plugin": plugin, "Key": key, "Value": value}
@@ -250,6 +252,6 @@ def write_message(
     )
 
 
-def resolve_code(rtype: MessageType, content: str):
+def resolve_code(rtype: MessageType, content: Optional[str]):
     """Create a Resolve message"""
     return BaseCommand("Resolve", **{"Type": rtype, "Content": content})

@@ -19,6 +19,8 @@ as well as sent back to the server.
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from enum import Enum, IntEnum
+from typing import List
+
 from .basecommands import BaseCommand
 from .codeparameter import CodeParameter
 from .result import Message
@@ -85,6 +87,9 @@ class CodeFlags(IntEnum):
 
 class Code(BaseCommand):
     """A parsed representation of a generic G/M/T-code"""
+
+    parameters: List
+    result: List
 
     @classmethod
     def from_json(cls, data):

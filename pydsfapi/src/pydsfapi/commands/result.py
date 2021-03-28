@@ -19,6 +19,7 @@ result contains classes relevant to result messages from the server
 """
 from enum import IntEnum
 from datetime import datetime
+from typing import List
 
 
 class MessageType(IntEnum):
@@ -57,5 +58,5 @@ class CodeResult:
             return cls([])
         return cls(list(map(Message.from_json, data)))
 
-    def __init__(self, messages: [Message]):
+    def __init__(self, messages: List[Message]):
         self.messages = messages
