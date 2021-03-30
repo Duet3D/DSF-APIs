@@ -111,6 +111,7 @@ func (bcc *BaseCommandConnection) PerformSimpleCode(code string, channel types.C
 // GetMachineModel retrieves the full object model of the machine.
 // In subscription mode this is the first command that has to be called once a connection has
 // been established
+// Deprecated: Use GetObjectModel instead
 func (bcc *BaseCommandConnection) GetMachineModel() (*machine.MachineModel, error) {
 	return bcc.GetObjectModel()
 }
@@ -128,6 +129,7 @@ func (bcc *BaseCommandConnection) GetObjectModel() (*machine.MachineModel, error
 }
 
 // GetSerializedMachineModel fetches the machine model as UTF-8 JSON
+// Deprecated: Use GetSerializedObjectModel instead
 func (bcc *BaseCommandConnection) GetSerializedMachineModel() (json.RawMessage, error) {
 	return bcc.GetSerializedObjectModel()
 }
@@ -148,6 +150,7 @@ func (bcc *BaseCommandConnection) GetSerializedObjectModel() (json.RawMessage, e
 
 // LockMachineModel locks the machine model for read/write Access
 // It is MANDATORY to call UnlockObjectModel when write access has finished
+// Deprecated: Use LockObjectModel instead
 func (bcc *BaseCommandConnection) LockMachineModel() error {
 	return bcc.LockObjectModel()
 }
@@ -167,6 +170,7 @@ func (bcc *BaseCommandConnection) PatchObjectModel(key, value string) error {
 
 // SetMachineModel sets a given property to a certain value. Make sure to lock the object
 // model before calling this.
+// Deprecated: Use SetObjectModel instead
 func (bcc *BaseCommandConnection) SetMachineModel(path, value string) (bool, error) {
 	return bcc.SetObjectModel(path, value)
 }
@@ -182,6 +186,7 @@ func (bcc *BaseCommandConnection) SetObjectModel(path, value string) (bool, erro
 }
 
 // SyncMachineModel waits for the full machine model to be updated from RepRapFirmware
+// Deprecated: Use SyncObjectModel instead
 func (bcc *BaseCommandConnection) SyncMachineModel() error {
 	return bcc.SyncObjectModel()
 }
@@ -193,6 +198,7 @@ func (bcc *BaseCommandConnection) SyncObjectModel() error {
 }
 
 // UnlockMachineModel unlocks the machine model
+// Deprecated: Use UnlockObjectModel instead
 func (bcc *BaseCommandConnection) UnlockMachineModel() error {
 	return bcc.UnlockObjectModel()
 }
