@@ -9,6 +9,7 @@ import (
 )
 
 // CodeResult is a list of code results
+// Deprecated: This class is now deprecated. It will be replaced with messages.Message in foreseeable future
 type CodeResult []messages.Message
 
 func (cr CodeResult) String() string {
@@ -49,6 +50,8 @@ const (
 	Unbuffered
 	// IsFromFirmware indicates if this code was requested by the firmware
 	IsFromFirmware
+	// IsLastCode indicates if this is the last code on the line
+	IsLastCode
 	// CodeFlagsNone is a placeholder to indicate that no flags are set
 	CodeFlagsNone = 0
 )

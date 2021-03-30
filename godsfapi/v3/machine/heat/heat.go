@@ -91,6 +91,8 @@ type HeaterModel struct {
 	Enabled bool `json:"enabled"`
 	// Gain value
 	Gain float64 `json:"gain"`
+	// HeatingRate in K/s
+	HeatingRate float64 `json:"heatingRate"`
 	// Inverted if the heater PWM signal is Inverted
 	Inverted bool `json:"inverted"`
 	// MaxPwm value for this heater (0 if unknown)
@@ -101,6 +103,8 @@ type HeaterModel struct {
 	StandardVoltage *float64 `json:"standardVoltage"`
 	// TimeConstant value
 	TimeConstant float64 `json:"timeConstant"`
+	// TimeConstantFanOn value with fan on
+	TimeConstantFanOn float64 `json:"timeConstantFanOn"`
 }
 
 // HeaterModelPID holds details about the PID model of a heater

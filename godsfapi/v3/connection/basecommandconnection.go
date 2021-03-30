@@ -112,6 +112,13 @@ func (bcc *BaseCommandConnection) PerformSimpleCode(code string, channel types.C
 // In subscription mode this is the first command that has to be called once a connection has
 // been established
 func (bcc *BaseCommandConnection) GetMachineModel() (*machine.MachineModel, error) {
+	return bcc.GetObjectModel()
+}
+
+// GetObjectModel retrieves the full object model of the machine.
+// In subscription mode this is the first command that has to be called once a connection has
+// been established
+func (bcc *BaseCommandConnection) GetObjectModel() (*machine.MachineModel, error) {
 	r, err := bcc.PerformCommand(commands.NewGetObjectModel())
 	if err != nil {
 		return nil, err
@@ -122,6 +129,11 @@ func (bcc *BaseCommandConnection) GetMachineModel() (*machine.MachineModel, erro
 
 // GetSerializedMachineModel fetches the machine model as UTF-8 JSON
 func (bcc *BaseCommandConnection) GetSerializedMachineModel() (json.RawMessage, error) {
+	return bcc.GetSerializedObjectModel()
+}
+
+// GetSerializedObjectModel fetches the object model as UTF-8 JSON
+func (bcc *BaseCommandConnection) GetSerializedObjectModel() (json.RawMessage, error) {
 	var raw json.RawMessage
 	err := bcc.Send(commands.NewGetObjectModel())
 	if err != nil {
@@ -135,8 +147,14 @@ func (bcc *BaseCommandConnection) GetSerializedMachineModel() (json.RawMessage, 
 }
 
 // LockMachineModel locks the machine model for read/write Access
-// It is MANDATORY to call UnlockMachineModel when write access has finished
+// It is MANDATORY to call UnlockObjectModel when write access has finished
 func (bcc *BaseCommandConnection) LockMachineModel() error {
+	return bcc.LockObjectModel()
+}
+
+// LockObjectModel locks the machine model for read/write Access
+// It is MANDATORY to call UnlockObjectModel when write access has finished
+func (bcc *BaseCommandConnection) LockObjectModel() error {
 	_, err := bcc.PerformCommand(commands.NewLockObjectModel())
 	return err
 }
@@ -150,6 +168,12 @@ func (bcc *BaseCommandConnection) PatchObjectModel(key, value string) error {
 // SetMachineModel sets a given property to a certain value. Make sure to lock the object
 // model before calling this.
 func (bcc *BaseCommandConnection) SetMachineModel(path, value string) (bool, error) {
+	return bcc.SetObjectModel(path, value)
+}
+
+// SetObjectModel sets a given property to a certain value. Make sure to lock the object
+// model before calling this.
+func (bcc *BaseCommandConnection) SetObjectModel(path, value string) (bool, error) {
 	r, err := bcc.PerformCommand(commands.NewSetObjectModel(path, value))
 	if err != nil {
 		return false, err
@@ -159,12 +183,22 @@ func (bcc *BaseCommandConnection) SetMachineModel(path, value string) (bool, err
 
 // SyncMachineModel waits for the full machine model to be updated from RepRapFirmware
 func (bcc *BaseCommandConnection) SyncMachineModel() error {
+	return bcc.SyncObjectModel()
+}
+
+// SyncObjectModel waits for the full object model to be updated from RepRapFirmware
+func (bcc *BaseCommandConnection) SyncObjectModel() error {
 	_, err := bcc.PerformCommand(commands.NewSyncObjectModel())
 	return err
 }
 
 // UnlockMachineModel unlocks the machine model
 func (bcc *BaseCommandConnection) UnlockMachineModel() error {
+	return bcc.UnlockObjectModel()
+}
+
+// UnlockObjectModel unlocks the object model
+func (bcc *BaseCommandConnection) UnlockObjectModel() error {
 	_, err := bcc.PerformCommand(commands.NewUnlockObjectModel())
 	return err
 }

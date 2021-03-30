@@ -33,6 +33,8 @@ const (
 
 // Network holds information about the network subsytem
 type Network struct {
+	// CorsSite indicates if the web server will allow cross-origin requests via Access-Control-Allow-Origin header
+	CorsSite bool `json:"corsSite"`
 	// Hostname of the machine
 	Hostname string `json:"hostname"`
 	// Interfaces is a list of available network interfaces

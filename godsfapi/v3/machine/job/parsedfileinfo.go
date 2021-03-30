@@ -4,6 +4,17 @@ import (
 	"time"
 )
 
+// Thumbnail holds image parsed out of GCode files
+type Thumbnail struct {
+
+	// EncodedImage is the base64 encoded image
+	EncodedImage string `json:"encodedImage"`
+	// Height of thumbail
+	Height int64 `json:"height"`
+	// Width of thumbail
+	Width int64 `json:"width"`
+}
+
 // ParsedFileInfo holds information about a parsed G-code file
 type ParsedFileInfo struct {
 	// Filament is the filament consumption per extruder drive (in mm)
@@ -28,4 +39,6 @@ type ParsedFileInfo struct {
 	SimulatedTime *uint64 `json:"simulatedTime"`
 	// Size of the file in bytes
 	Size uint64 `json:"size"`
+	// Thumbnails is a collection of thumbnails parsed from GCode
+	Thumbnails []Thumbnail `json:"thumbnails"`
 }

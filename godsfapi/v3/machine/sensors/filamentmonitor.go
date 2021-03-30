@@ -121,10 +121,32 @@ func (fm FilamentMonitors) GetAsRotatingMagnetFilamentMonitor(i int) (*RotatingM
 	return rmfm, nil
 }
 
+// FilamentMonitorStatus are the possible filament sensor statuses
+type FilamentMonitorStatus string
+
+const (
+	// NoMonitor is present
+	NoMonitor FilamentMonitorStatus = "noMonitor"
+	// Ok for filament monitor working normally
+	Ok = "ok"
+	// NoDataReceived if no data received from remote filament monitor
+	NoDataReceived = "noDataReceived"
+	// NoFilament if no filament is detected
+	NoFilament = "noFilament"
+	// TooLittleMovement if the sensor reads less movement than expected
+	TooLittleMovement = "tooLittleMovement"
+	// TooMuchMovement if the sensor reads more movement than expected
+	TooMuchMovement = "tooMuchMovement"
+	// SensorError if the sensor encountered an error
+	SensorError = "sensorError"
+)
+
 // BaseFilamentMonitor holds information about a filament monitor
 type BaseFilamentMonitor struct {
 	// Enabled indicates if this filament monitor is enabled
 	Enabled bool `json:"enabled"`
+	// Status is the last reported status of this filament monitor
+	Status FilamentMonitorStatus `json:"status"`
 	// Type of this filament monitor
 	Type FilamentMonitorType `json:"type"`
 }

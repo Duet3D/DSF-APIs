@@ -232,10 +232,12 @@ type ProbeGrid struct {
 
 // Skew holds details about orthogonal axis compensation parameters
 type Skew struct {
+	// CompensateXY indicates if TanXY value is applied to the X or Y axis value
+	CompensateXY bool `json:"compensateXY"`
 	// TanXY is the tangent of the skew angle for XY axes
-	TanXY float64
+	TanXY float64 `json:"tanXY"`
 	// TaxXZ is the tangent of the skew angle for XZ axes
-	TanXZ float64
+	TanXZ float64 `json:"tanXZ"`
 	// TaxYZ is the tangent of the skew angle for YZ axes
-	TanYZ float64
+	TanYZ float64 `json:"tanYZ"`
 }
