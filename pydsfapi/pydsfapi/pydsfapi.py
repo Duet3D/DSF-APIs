@@ -524,8 +524,8 @@ class BaseCommandConnection(BaseConnection):
     def write_message(self,
                       message_type: MessageType,
                       message: str,
-                      output_message: bool = True,
-                      log_message: bool = False):
+                      output_message: bool,
+                      log_message: bool):
         """Write an arbitrary message"""
         res = self.perform_command(
             basecommands.write_message(message_type, message, output_message, log_message))

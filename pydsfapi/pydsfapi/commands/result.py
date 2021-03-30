@@ -45,6 +45,7 @@ class CodeResult:
     """
     List-based representation of a code result.
     Each item represents a Message instance which can be easily converted to a string
+    Deprecated: Will be replaced by Message in foreseeable future
     """
     @classmethod
     def from_json(cls, data):

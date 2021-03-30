@@ -33,7 +33,7 @@ class ServerInitMessage:
         """Deserialize a dictionary coming from JSON into an instance of this class"""
         return cls(**data)
 
-    PROTOCOL_VERSION = 9
+    PROTOCOL_VERSION = 10
 
     def __init__(self, version: int, id: int):
         self.version = version

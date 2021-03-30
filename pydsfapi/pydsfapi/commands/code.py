@@ -77,6 +77,7 @@ class CodeFlags(IntEnum):
     IsPrioritized = 256
     Unbuffered = 512
     IsFromFirmware = 1024
+    IsLastCode = 2048
 
 
 class Code(BaseCommand):

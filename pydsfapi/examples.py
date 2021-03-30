@@ -2,7 +2,7 @@
 
 import sys
 import time
-from pydsfapi import pydsfapi
+import pydsfapi
 from pydsfapi.commands import basecommands, code
 from pydsfapi.initmessages.clientinitmessages import InterceptionMode, SubscriptionMode
 
