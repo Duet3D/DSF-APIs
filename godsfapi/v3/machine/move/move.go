@@ -90,6 +90,8 @@ type Axis struct {
 	Babystep float64 `json:"babystep"`
 	// Current of the motor (in mA)
 	Current int64 `json:"current"`
+	// Drivers list of assigned drivers
+	Drivers []string `json:"drivers"`
 	// Homed indicates homing status
 	Homed bool `json:"homed"`
 	// Jerk of the motor (in mm/s)
