@@ -24,11 +24,11 @@ import os
 import socket
 from concurrent.futures import ThreadPoolExecutor
 from .commands import responses, basecommands, code, result, codechannel
-from .commands.basecommands import MessageType
+from .commands.basecommands import MessageType, LogLevel
 from .initmessages import serverinitmessage, clientinitmessages
 from .model import parsedfileinfo, machinemodel
 
-SOCKET_DIRECTORY = "/var/run/dsf"
+SOCKET_DIRECTORY = "/run/dsf"
 SOCKET_FILE = "dcs.sock"
 FULL_SOCKET_PATH = SOCKET_DIRECTORY + "/" + SOCKET_FILE
 DEFAULT_BACKLOG = 4
@@ -367,6 +367,10 @@ class BaseCommandConnection(BaseConnection):
         res = self.perform_command(basecommands.add_user_session(access, tpe, origin, origin_port))
         return int(res.result)
 
+    def check_password(self, password: str):
+        """Check the given password (see M551)"""
+        return self.perform_command(basecommands.check_password(password))
+
     def get_file_info(self, file_name: str):
         """Parse a G-code file and returns file information about it"""
         res = self.perform_command(basecommands.get_file_info(file_name),
@@ -521,14 +525,11 @@ class BaseCommandConnection(BaseConnection):
         """Unlock the object model again"""
         return self.perform_command(basecommands.UNLOCK_OBJECT_MODEL)
 
-    def write_message(self,
-                      message_type: MessageType,
-                      message: str,
-                      output_message: bool,
-                      log_message: bool):
+    def write_message(self, message_type: MessageType, message: str, output_message: bool,
+                      log_level: LogLevel):
         """Write an arbitrary message"""
         res = self.perform_command(
-            basecommands.write_message(message_type, message, output_message, log_message))
+            basecommands.write_message(message_type, message, output_message, log_level))
         return res.result
 
 
@@ -567,6 +568,10 @@ class InterceptConnection(BaseCommandConnection):
         """Wait for a code to be intercepted and read it"""
         return self.receive(code.Code)
 
+    def flush(self):
+        """Wait for all previous codes to finish"""
+        return self.perform_command(basecommands.flush())
+
     def cancel_code(self):
         """Instruct the control server to cancel the last received code (in intercepting mode)"""
         self.send(basecommands.CANCEL)
@@ -598,7 +603,7 @@ class SubscribeConnection(BaseConnection):
     def connect(self, socket_path: str = FULL_SOCKET_PATH):
         """Establishes a connection to the given UNIX socket file"""
         sim = clientinitmessages.subscribe_init_message(self.subscription_mode, self.filter_str,
-                                                       self.filter_list)
+                                                        self.filter_list)
 
         return super().connect(sim, socket_path)
 

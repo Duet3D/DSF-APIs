@@ -3,7 +3,7 @@
 from distutils.core import setup
 
 setup(name='pydsfapi',
-      version='3.2.0',
+      version='3.3.0',
       description='Python interface to access DuetSoftwareFramework',
       author='Manuel Coenen',
       author_email='manuel.coenen@gmail.com',

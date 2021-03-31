@@ -45,6 +45,8 @@ LOCK_MACHINE_MODEL = BaseCommand('LockObjectModel')
 LOCK_OBJECT_MODEL = BaseCommand('LockObjectModel')
 UNLOCK_MACHINE_MODEL = BaseCommand('UnlockObjectModel')
 UNLOCK_OBJECT_MODEL = BaseCommand('UnlockObjectModel')
+START_PLUGINS = BaseCommand('StartPlugins')
+STOP_PLUGINS = BaseCommand('StopPlugins')
 
 
 class HttpEndpointType(str, Enum):
@@ -89,6 +91,14 @@ def remove_http_endpoint(endpoint_type: HttpEndpointType, namespace: str, path: 
     })
 
 
+def check_password(password: str):
+    """
+    Check if the given password is correct and matches the previously set value from M551.
+    If no password was configured before or if it was set to "reprap", this will always return true
+    """
+    return BaseCommand('CheckPassword', **{'Password': password})
+
+
 class AccessLevel(str, Enum):
     """Defines what a user is allowed to do"""
     ReadOnly = 'ReadOnly'
@@ -130,7 +140,7 @@ def evaluate_expression(channel: CodeChannel, expression: str):
     return BaseCommand('EvaluateExpression', **{'Channel': channel, 'Expression': expression})
 
 
-def flush(channel: CodeChannel):
+def flush(channel: CodeChannel = None):
     """Create a Flush command"""
     return BaseCommand('Flush', **{'Channel': channel})
 
@@ -216,12 +226,28 @@ class MessageType(IntEnum):
     Error = 2
 
 
-def write_message(message_type: MessageType, content: str, output_message: bool, log_message: bool):
+class LogLevel(str, Enum):
+    """Configured log level"""
+    Debug = "debug"
+    Info = "info"
+    Warn = "warn"
+    Off = "off"
+
+
+def write_message(message_type: MessageType,
+                  content: str,
+                  output_message: bool,
+                  log_level: LogLevel = None):
     """
     Write an arbitrary generic message
     """
-    return BaseCommand('WriteMessage', **{'Type': message_type, 'Content': content, 'OutputMessage': output_message,
-                                          'LogMessage': log_message})
+    return BaseCommand(
+        'WriteMessage', **{
+            'Type': message_type,
+            'Content': content,
+            'OutputMessage': output_message,
+            'LogLevel': log_level
+        })
 
 
 def resolve_code(rtype: MessageType, content: str):
