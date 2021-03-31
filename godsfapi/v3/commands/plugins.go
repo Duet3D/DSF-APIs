@@ -70,6 +70,13 @@ func NewSetPluginData(plugin, key, value string) *SetPluginData {
 	}
 }
 
+var startPlugins = NewBaseCommand("StartPlugins")
+
+// NewStartPlugins starts all previously started plugins again
+func NewStartPlugins() *BaseCommand {
+	return startPlugins
+}
+
 var stopPlugins = NewBaseCommand("StopPlugins")
 
 // NewStopPlugins returns a command to stop all plugins and save which plugins were running.
