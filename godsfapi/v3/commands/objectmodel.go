@@ -1,5 +1,7 @@
 package commands
 
+import "github.com/Duet3D/DSF-APIs/godsfapi/v3/machine/network"
+
 var getObjectModel = NewBaseCommand("GetObjectModel")
 var syncObjectModel = NewBaseCommand("SyncObjectModel")
 var lockObjectModel = NewBaseCommand("LockObjectModel")
@@ -60,5 +62,22 @@ func NewPatchObjectModel(key, patch string) *PatchObjectModel {
 		BaseCommand: *NewBaseCommand("PatchObjectModel"),
 		Key:         key,
 		Patch:       patch,
+	}
+}
+
+// SetNetworkProtocol flags a given network protocol as enabled or disabed
+type SetNetworkProtocol struct {
+	BaseCommand
+	// Protocol to change
+	Protocol network.NetworkProtocol
+	// Enabled represents the desired enable-state
+	Enabled bool
+}
+
+func NewSetNetworkProtocol(protocol network.NetworkProtocol, enabled bool) *SetNetworkProtocol {
+	return &SetNetworkProtocol{
+		BaseCommand: *NewBaseCommand("SetNetworkProtocol"),
+		Protocol:    protocol,
+		Enabled:     enabled,
 	}
 }

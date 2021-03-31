@@ -48,12 +48,12 @@ const (
 
 // Endstop holds information about an endstop
 type Endstop struct {
+	// HighEnd indicates whether this endstop is at the high end of the axis
+	HighEnd bool `json:"highEnd"`
 	// Triggered represents the curent trigger state
 	Triggered bool `json:"triggered"`
 	// Type of this endstop
 	Type EndstopType `json:"type"`
-	// Probe is the index of the use probe (only valid if Type == ZProbeAsEndstop)
-	Probe *int64 `json:"probe"`
 }
 
 // EndstopType represents the type of a configured enstop
@@ -111,9 +111,15 @@ type Probe struct {
 	// RecoveryTime (in s)
 	RecoveryTime float64 `json:"recoveryTime"`
 	// Speed at which probing is performed (in mm/s)
-	Speed float64 `json:"speed"`
+	// Deprecated: Use Speeds[0] instead
+	Speed float64 `json:"-"`
+	// Speeds are fast and slow probing speeds (in mm/s)
+	Speeds []float64 `json:"speeds"`
 	// TemperatureCoefficient of the probe
-	TemperatureCoefficient float64 `json:"temperatureCoefficient"`
+	// Deprecated: Use TemperatureCoefficients instead
+	TemperatureCoefficient float64 `json:"-"`
+	// TemperatureCoefficients is a list of temperature coefficients
+	TemperatureCoefficients []float64 `json:"temperatureCoefficients"`
 	// Threshold at which the probe is considered to be triggered (0..1023)
 	Threshold int64 `json:"threshold"`
 	// Tolerance is the allowed deviation between two measurements (in mm)

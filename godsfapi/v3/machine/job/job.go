@@ -11,7 +11,8 @@ type Job struct {
 	// FilePosition is the current position in the file being processed in bytes
 	FilePosition *uint64 `json:"filePosition"`
 	// FirstLayerDuration is the duration of the first layer in s or nil if not available
-	FirstLayerDuration *int64 `json:"firstLayerDuration"`
+	// Deprecated: No longer used, will always be nil
+	FirstLayerDuration *int64 `json:"-"`
 	// LastDuration is the total duration of the last job in s or nil if not available
 	LastDuration *int64 `json:"lastDuration"`
 	// LastFileName is the name of the last processed file
@@ -25,9 +26,11 @@ type Job struct {
 	// Layer number of the current layer or nil if none has been started yet
 	Layer *int64 `json:"layer"`
 	// LayerTime is time elapsed since the beginning of the current layer in s or nil if unknown
-	LayerTime *int64 `json:"layerTime"`
+	LayerTime *float64 `json:"layerTime"`
 	// Layers is a list of Layer information about past layers
 	Layers []Layer `json:"layers"`
+	// PauseDuration is total pause time since job stareted
+	PauseDuration *int64 `json:"pauseDuration"`
 	// TimesLeft contains estimated remaining times
 	TimesLeft TimesLeft `json:"timesLeft"`
 	// WarmUpDuration is the time needed to heat up the heaters in s or nil if unknown
@@ -37,7 +40,7 @@ type Job struct {
 // Layer holds information about a layer from a file being printed
 type Layer struct {
 	// Duration of the layer (in s)
-	Duration int `json:"duration"`
+	Duration float64 `json:"duration"`
 	// Filament represents the actual amount of filament extruded during
 	// this layer in mm
 	Filament []float64 `json:"filament"`
@@ -46,6 +49,8 @@ type Layer struct {
 	FractionPrinted float64 `json:"fractionPrinted"`
 	// Height of the layer in mm (0 if unknown)
 	Height float64 `json:"height"`
+	// Temparatures are the last heater temparatures (in degC or nil if unknown)
+	Temperatures []*float64 `json:"temperatures"`
 }
 
 // TimesLeft holds information about estimated remaining times
@@ -55,5 +60,8 @@ type TimesLeft struct {
 	// Filament consumption based estimation in s (nil if unknown)
 	Filament *int64 `json:"filament"`
 	// Layer progress based estimation in s (nil if unknown)
-	Layer *int64 `json:"layer"`
+	// Deprecated: No longer used, will always return nil
+	Layer *int64 `json:"-"`
+	// Slicer is time left base on slicer reports (see M73, in s or nil)
+	Slicer *int64 `json:"slicer"`
 }

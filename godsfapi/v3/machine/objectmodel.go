@@ -49,8 +49,8 @@ type MachineModel struct {
 	Move move.Move `json:"move"`
 	// Network holds information about connected network adapters
 	Network network.Network `json:"network"`
-	// Plugins is the list of loaded SBC plugins
-	Plugins []plugins.Plugin
+	// Plugins is the map of loaded SBC plugins where each key is the plugin identifier
+	Plugins map[string]plugins.Plugin
 	// Scanner holds information about the 3D scanner subsystem
 	Scanner scanner.Scanner `json:"scanner"`
 	// Sensors holds information about connected sensors including Z-probes and endstops
@@ -64,7 +64,8 @@ type MachineModel struct {
 	// UserSessions is a list of user session
 	UserSessions []usersessions.UserSession `json:"userSessions"`
 	// UserVariables is a list of user-defined variables
-	UserVariables []uservariables.UserVariable `json:"userVariables"`
+	// Deprecated: Do not use this field. This will probably be changed to a map in the future.
+	UserVariables []uservariables.UserVariable `json:"-"`
 	// Volumes holds a list of available mass storages
 	Volumes []volume.Volume `json:"volumes"`
 }

@@ -19,6 +19,11 @@ type State struct {
 	DisplayMessage string `json:"displayMessage"`
 	// DsfVersion is the version of Duet SoftwareFramework
 	DsfVersion string `json:"dsfVersion"`
+	// DsfPluginSupport indicates if DSF allows the installation and usage of third-party plugins
+	DsfPluginSupport bool `json:"dsfPluginSupport"`
+	// DsfRootPluginSupport indicates if DSF allows the installation and usage of third-party
+	// root plugins (potentially dangerous)
+	DsfRootPluginSupport bool `json:"dsfRootPluginSupport"`
 	// GpOut is a list of general-purpose output ports
 	GpOut []GpOutputPort `json:"gpOut"`
 	// LaserPwm is laser PWM of the next commanded move on a scale of 0..1 or nil if not applicable
@@ -31,6 +36,8 @@ type State struct {
 	MachineMode MachineMode `json:"machineMode"`
 	// NextTool is the number of the next to to be selected
 	NextTool int64 `json:"nextTool"`
+	// PluginsStarted indicates if at least one plugin has been started
+	PluginsStarted bool `json:"pluginsStarted"`
 	// PowerFailScript is the script to execute when power fails
 	PowerFailScript string `json:"powerFailScript"`
 	// PreviousTool is the number of the previous tool
@@ -58,6 +65,20 @@ type GpOutputPort struct {
 	// Pwm value of this port in range 0..1
 	Pwm float64 `json:"pwm"`
 }
+
+// LogLevel represents the configured log leve
+type LogLevel string
+
+const (
+	// Debug log level
+	Debug LogLevel = "debug"
+	// Info log level
+	Info = "info"
+	// Warn log level
+	Warn = "warn"
+	// Off when logging is disabled
+	LogLevelOff = "off"
+)
 
 // MachineMode represents supported operation modes of the machine
 type MachineMode string

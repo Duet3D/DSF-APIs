@@ -56,6 +56,11 @@ func (ic *InterceptConnection) ReceiveCode() (*commands.Code, error) {
 	return c, nil
 }
 
+// Flush will wait for all previous codes of to finish
+func (ic *InterceptConnection) Flush() (bool, error) {
+	return ic.BaseCommandConnection.Flush(types.Unknown)
+}
+
 // CancelCode instructs the control server to cancel the last received code
 func (ic *InterceptConnection) CancelCode() error {
 	return ic.Send(commands.NewCancel())
@@ -71,4 +76,10 @@ func (ic *InterceptConnection) IgnoreCode() error {
 // the given message details
 func (ic *InterceptConnection) ResolveCode(mType messages.MessageType, content string) error {
 	return ic.Send(commands.NewResolve(mType, content))
+}
+
+// ResolveCodeMessage instructs the control server to resolved the last received code with
+// the given message details
+func (ic *InterceptConnection) ResolveCodeMessage(message messages.Message) error {
+	return ic.Send(commands.NewResolve(message.Type, message.Content))
 }

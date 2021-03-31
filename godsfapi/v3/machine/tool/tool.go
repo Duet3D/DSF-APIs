@@ -37,6 +37,10 @@ type Tool struct {
 	OffsetsProbed int64 `json:"offsetsProbed"`
 	// Retraction are the firmware retraction settings or nil if not configured
 	Retraction *ToolRetraction `json:"retraction"`
+	// Spindle is the index of the mapped spindle of -1 if not mapped
+	Spindle int64 `json:"spindle"`
+	// SpindleRpm is the RPM of the mapped Spindle
+	SpindleRpm int64 `json:"spindleRpm"`
 	// Standby temperature of the tool
 	Standby []float64 `json:"standby"`
 	// State is the current state if this tool

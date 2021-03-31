@@ -2,8 +2,24 @@ package commands
 
 import (
 	"github.com/Duet3D/DSF-APIs/godsfapi/v3/machine/messages"
+	"github.com/Duet3D/DSF-APIs/godsfapi/v3/machine/state"
 	"github.com/Duet3D/DSF-APIs/godsfapi/v3/types"
 )
+
+// CheckPassword checks if the given password is correct and matches the previously set value from M551.
+// If no password was configured before or if it was set to "reprap" this will always return true.
+type CheckPassword struct {
+	BaseCommand
+	Password string
+}
+
+// NewCheckPassword creates a new CheckPassword instance for the given password
+func NewCheckPassword(password string) *CheckPassword {
+	return &CheckPassword{
+		BaseCommand: *NewBaseCommand("CheckPassword"),
+		Password:    password,
+	}
+}
 
 // EvaluateExpression can be used to evaluate an arbitrary expression on the given channel in RepRapFirmware
 //
@@ -97,16 +113,19 @@ type WriteMessage struct {
 	// OutputMessage on the console and via the object model
 	OutputMessage bool
 	// LogMessage writes the message to the log file (if applicable)
+	// Deprecated: in favor of LogLevel
 	LogMessage bool
+	// LogLevel of this message
+	LogLevel *state.LogLevel
 }
 
 // NewWriteMessage creates a new WriteMessage
-func NewWriteMessage(mType messages.MessageType, content string, outputMessage, logMessage bool) *WriteMessage {
+func NewWriteMessage(mType messages.MessageType, content string, outputMessage bool, logLevel *state.LogLevel) *WriteMessage {
 	return &WriteMessage{
 		BaseCommand:   *NewBaseCommand("WriteMessage"),
 		Type:          mType,
 		Content:       content,
 		OutputMessage: outputMessage,
-		LogMessage:    logMessage,
+		LogLevel:      logLevel,
 	}
 }
