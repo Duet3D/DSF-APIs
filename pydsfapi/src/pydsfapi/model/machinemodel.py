@@ -1,5 +1,5 @@
 """
-codechannel contains an enum with available code channels.
+machinemodel contains a generic implementation for the machine model.
 
     Python interface to DuetSoftwareFramework
     Copyright (C) 2020 Duet3D
@@ -17,27 +17,14 @@ codechannel contains an enum with available code channels.
     You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-from enum import Enum
 
 
-class CodeChannel(str, Enum):
-    """Enumeration of every available code channel"""
-    HTTP = 'HTTP'
-    Telnet = 'Telnet'
-    File = 'File'
-    USB = 'USB'
-    Aux = 'Aux'
-    Trigger = 'Trigger'
-    Queue = 'Queue'
-    LCD = 'LCD'
-    SBC = 'SBC'
-    Daemon = 'Daemon'
-    Aux2 = 'Aux2'
-    AutoPause = 'AutoPause'
-    Unknown = 'Unknown'
+class MachineModel(dict):
+    """
+    MachineModel provides generic access to the machine model.
+    """
 
-    DEFAULT_CHANNEL = SBC
-
-    @staticmethod
-    def list():
-        return list(map(lambda cc: cc.value, CodeChannel))
+    @classmethod
+    def from_json(cls, data):
+        """Deserialize an instance of this class from JSON deserialized dictionary"""
+        return cls(**data)

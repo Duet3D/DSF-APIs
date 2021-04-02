@@ -23,6 +23,7 @@ from datetime import datetime
 
 class MessageType(IntEnum):
     """Type of a generic message"""
+
     Success = 0
     Warning = 1
     Error = 2
@@ -30,6 +31,7 @@ class MessageType(IntEnum):
 
 class Message:
     """Generic container for messages"""
+
     @classmethod
     def from_json(cls, data):
         """Deserialize an instance of this class from JSON deserialized dictionary"""
@@ -47,6 +49,7 @@ class CodeResult:
     Each item represents a Message instance which can be easily converted to a string
     Deprecated: Will be replaced by Message in foreseeable future
     """
+
     @classmethod
     def from_json(cls, data):
         """Deserialize an instance of this class from JSON deserialized dictionary"""

@@ -22,22 +22,24 @@ from DuetSoftwareFramework.
 
 def decode_response(obj):
     """Deserialization helper to convert a response to the appropriate type"""
-    if obj['success']:
-        if 'result' in obj:
-            return Response(obj['result'])
+    if obj["success"]:
+        if "result" in obj:
+            return Response(obj["result"])
         return Response()
 
-    return ErrorResponse(obj['errorType'], obj['errorMessage'])
+    return ErrorResponse(obj["errorType"], obj["errorMessage"])
 
 
 class BaseResponse:
     """Base class for every response to a command request."""
+
     def __init__(self, success):
         self.success = success
 
 
 class Response(BaseResponse):
     """Response of a Command"""
+
     def __init__(self, result=None):
         super().__init__(True)
         self.result = result
@@ -45,6 +47,7 @@ class Response(BaseResponse):
 
 class ErrorResponse(BaseResponse):
     """Response indicating a runtime exception during the internal processing of a command"""
+
     def __init__(self, error_type, error_message):
         super().__init__(False)
         self.error_type = error_type

@@ -1,5 +1,4 @@
-include examples.py
-include setup.py
 include LICENSE
 include README.md
-recursive-include pydsfapi *.py
+include setup.py
+include examples.py

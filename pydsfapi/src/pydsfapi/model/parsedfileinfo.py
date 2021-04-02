@@ -23,14 +23,25 @@ from datetime import datetime
 
 class ParsedFileInfo:
     """Holds information about a parsed G-code file"""
+
     @classmethod
     def from_json(cls, data):
         """Deserialize an instance of this class from JSON deserialized dictionary"""
         return cls(**data)
 
-    def __init__(self, fileName: str, size: int, lastModified: datetime, height: float,
-                 firstLayerHeight: float, numLayers: int, filament: [float], generatedBy: str,
-                 printTime: int, simulatedTime: int):
+    def __init__(
+        self,
+        fileName: str,
+        size: int,
+        lastModified: datetime,
+        height: float,
+        firstLayerHeight: float,
+        numLayers: int,
+        filament: [float],
+        generatedBy: str,
+        printTime: int,
+        simulatedTime: int,
+    ):
         self.file_name = fileName
         self.size = size
         self.last_modified = lastModified

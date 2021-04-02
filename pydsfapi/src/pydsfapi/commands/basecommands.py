@@ -23,6 +23,7 @@ from .codechannel import CodeChannel
 
 class BaseCommand:
     """Base class of a command."""
+
     @classmethod
     def from_json(cls, data):
         """Deserialize an instance of this class from a JSON deserialized dictionary"""
@@ -34,33 +35,35 @@ class BaseCommand:
             self.__dict__[key] = value
 
 
-ACKNOWLEDGE = BaseCommand('Acknowledge')
-CANCEL = BaseCommand('Cancel')
-IGNORE = BaseCommand('Ignore')
-GET_MACHINE_MODEL = BaseCommand('GetObjectModel')
-GET_OBJECT_MODEL = BaseCommand('GetObjectModel')
-SYNC_MACHINE_MODEL = BaseCommand('SyncObjectModel')
-SYNC_OBJECT_MODEL = BaseCommand('SyncObjectModel')
-LOCK_MACHINE_MODEL = BaseCommand('LockObjectModel')
-LOCK_OBJECT_MODEL = BaseCommand('LockObjectModel')
-UNLOCK_MACHINE_MODEL = BaseCommand('UnlockObjectModel')
-UNLOCK_OBJECT_MODEL = BaseCommand('UnlockObjectModel')
+ACKNOWLEDGE = BaseCommand("Acknowledge")
+CANCEL = BaseCommand("Cancel")
+IGNORE = BaseCommand("Ignore")
+GET_MACHINE_MODEL = BaseCommand("GetObjectModel")
+GET_OBJECT_MODEL = BaseCommand("GetObjectModel")
+SYNC_MACHINE_MODEL = BaseCommand("SyncObjectModel")
+SYNC_OBJECT_MODEL = BaseCommand("SyncObjectModel")
+LOCK_MACHINE_MODEL = BaseCommand("LockObjectModel")
+LOCK_OBJECT_MODEL = BaseCommand("LockObjectModel")
+UNLOCK_MACHINE_MODEL = BaseCommand("UnlockObjectModel")
+UNLOCK_OBJECT_MODEL = BaseCommand("UnlockObjectModel")
 
 
 class HttpEndpointType(str, Enum):
     """Enumeration of supported HTTP request types"""
-    GET = 'GET'
-    POST = 'POST'
-    PUT = 'PUT'
-    PATCH = 'PATCH'
-    TRACE = 'TRACE'
-    DELETE = 'DELETE'
-    OPTIONS = 'OPTIONS'
-    WebSocket = 'WebSocket'
+
+    GET = "GET"
+    POST = "POST"
+    PUT = "PUT"
+    PATCH = "PATCH"
+    TRACE = "TRACE"
+    DELETE = "DELETE"
+    OPTIONS = "OPTIONS"
+    WebSocket = "WebSocket"
 
 
-def add_http_endpoint(endpoint_type: HttpEndpointType, namespace: str, path: str,
-                      is_upload_request: bool):
+def add_http_endpoint(
+    endpoint_type: HttpEndpointType, namespace: str, path: str, is_upload_request: bool
+):
     """
     Register a new HTTP endpoint via DuetWebServer.
     This will create a new HTTP endpoint under /machine/{Namespace}/{EndpointPath}.
@@ -69,12 +72,14 @@ def add_http_endpoint(endpoint_type: HttpEndpointType, namespace: str, path: str
     the given path that DuetWebServer can connect to
     """
     return BaseCommand(
-        'AddHttpEndpoint', **{
-            'EndpointType': endpoint_type,
-            'Namespace': namespace,
-            'Path': path,
-            'IsUploadRequest': is_upload_request,
-        })
+        "AddHttpEndpoint",
+        **{
+            "EndpointType": endpoint_type,
+            "Namespace": namespace,
+            "Path": path,
+            "IsUploadRequest": is_upload_request,
+        },
+    )
 
 
 def remove_http_endpoint(endpoint_type: HttpEndpointType, namespace: str, path: str):
@@ -82,43 +87,48 @@ def remove_http_endpoint(endpoint_type: HttpEndpointType, namespace: str, path: 
     Remove an existing HTTP endpoint.
     Returns true if the endpoint could be successfully removed
     """
-    return BaseCommand('RemoveHttpEndpoint', **{
-        'EndpointType': endpoint_type,
-        'Namespace': namespace,
-        'Path': path
-    })
+    return BaseCommand(
+        "RemoveHttpEndpoint",
+        **{"EndpointType": endpoint_type, "Namespace": namespace, "Path": path},
+    )
 
 
 class AccessLevel(str, Enum):
     """Defines what a user is allowed to do"""
-    ReadOnly = 'ReadOnly'
-    ReadWrite = 'ReadWrite'
+
+    ReadOnly = "ReadOnly"
+    ReadWrite = "ReadWrite"
 
 
 class SessionType(str, Enum):
     """Types of user sessions"""
-    Local = 'Local'
-    HTTP = 'HTTP'
-    Telnet = 'Telnet'
+
+    Local = "Local"
+    HTTP = "HTTP"
+    Telnet = "Telnet"
 
 
-def add_user_session(access: AccessLevel, tpe: SessionType, origin: str, origin_port: int):
+def add_user_session(
+    access: AccessLevel, tpe: SessionType, origin: str, origin_port: int
+):
     """
     Register a new user session.
     Returns the ID of the new user session
     """
     return BaseCommand(
-        'AddUserSession', **{
-            'AccessLevel': access,
-            'SessionType': tpe,
-            'Origin': origin,
-            'OriginPort': origin_port
-        })
+        "AddUserSession",
+        **{
+            "AccessLevel": access,
+            "SessionType": tpe,
+            "Origin": origin,
+            "OriginPort": origin_port,
+        },
+    )
 
 
 def remove_user_session(session_id: int):
     """Remove an existing user session"""
-    return BaseCommand('RemoveUserSession', **{'Id': session_id})
+    return BaseCommand("RemoveUserSession", **{"Id": session_id})
 
 
 def evaluate_expression(channel: CodeChannel, expression: str):
@@ -127,34 +137,36 @@ def evaluate_expression(channel: CodeChannel, expression: str):
     Do not use this call to evaluate file-based and network-related fields because the
     DSF and RRF models diverge in this regard.
     """
-    return BaseCommand('EvaluateExpression', **{'Channel': channel, 'Expression': expression})
+    return BaseCommand(
+        "EvaluateExpression", **{"Channel": channel, "Expression": expression}
+    )
 
 
 def flush(channel: CodeChannel):
     """Create a Flush command"""
-    return BaseCommand('Flush', **{'Channel': channel})
+    return BaseCommand("Flush", **{"Channel": channel})
 
 
 def get_file_info(file_name: str):
     """Create a GetFileInfo command"""
-    return BaseCommand('GetFileInfo', **{'FileName': file_name})
+    return BaseCommand("GetFileInfo", **{"FileName": file_name})
 
 
 def resolve_path(path: str):
     """Create a ResolvePath command"""
-    return BaseCommand('ResolvePath', **{'Path': path})
+    return BaseCommand("ResolvePath", **{"Path": path})
 
 
 def simple_code(code: str, channel: CodeChannel):
     """Create a simple G/M/T code command"""
-    return BaseCommand('SimpleCode', **{'Code': code, 'Channel': channel})
+    return BaseCommand("SimpleCode", **{"Code": code, "Channel": channel})
 
 
 def patch_object_model(key: str, patch: str):
     """
     Apply a full patch tot he object model. May be used only in non-SPI mode
     """
-    return BaseCommand('PatchObjectModel', **{'Key': key, 'Patch': patch})
+    return BaseCommand("PatchObjectModel", **{"Key": key, "Patch": patch})
 
 
 def set_object_model(property_path: str, value: str):
@@ -162,7 +174,9 @@ def set_object_model(property_path: str, value: str):
     Set an atomic property in the object model.
     Make sure to acquire the read/write lock first! Returns true if the field could be updated
     """
-    return BaseCommand('SetObjectModel', **{'PropertyPath': property_path, 'Value': value})
+    return BaseCommand(
+        "SetObjectModel", **{"PropertyPath": property_path, "Value": value}
+    )
 
 
 def set_update_status(updating: bool):
@@ -170,14 +184,14 @@ def set_update_status(updating: bool):
     Override the current status as reported by the object model when
     performing a software update.
     """
-    return BaseCommand('SetUpdateStatus', **{'Updating': updating})
+    return BaseCommand("SetUpdateStatus", **{"Updating": updating})
 
 
 def install_plugin(plugin_file: str):
     """
     Install or upgrade a plugin
     """
-    return BaseCommand('InstallPlugin', **{'PluginFile': plugin_file})
+    return BaseCommand("InstallPlugin", **{"PluginFile": plugin_file})
 
 
 def set_plugin_data(plugin: str, key: str, value: str):
@@ -185,45 +199,57 @@ def set_plugin_data(plugin: str, key: str, value: str):
     Set custom plugin data in the object model.
     May be used to update only the own plygin data unless the plugin has the ManagePlugins permission
     """
-    return BaseCommand('SetPluginData', **{'Plugin': plugin, 'Key': key, 'Value': value})
+    return BaseCommand(
+        "SetPluginData", **{"Plugin": plugin, "Key": key, "Value": value}
+    )
 
 
 def start_plugin(plugin: str):
     """
     Start a plugin
     """
-    return BaseCommand('StartPlugin', **{'Plugin': plugin})
+    return BaseCommand("StartPlugin", **{"Plugin": plugin})
 
 
 def stop_plugin(plugin: str):
     """
     Stop a plugin
     """
-    return BaseCommand('StopPlugin', **{'Plugin': plugin})
+    return BaseCommand("StopPlugin", **{"Plugin": plugin})
 
 
 def uninstall_plugin(plugin: str):
     """
     Uninstall a plugin
     """
-    return BaseCommand('UninstallPlugin', **{'Plugin': plugin})
+    return BaseCommand("UninstallPlugin", **{"Plugin": plugin})
 
 
 class MessageType(IntEnum):
     """Type of Resolve message"""
+
     Success = 0
     Warning = 1
     Error = 2
 
 
-def write_message(message_type: MessageType, content: str, output_message: bool, log_message: bool):
+def write_message(
+    message_type: MessageType, content: str, output_message: bool, log_message: bool
+):
     """
     Write an arbitrary generic message
     """
-    return BaseCommand('WriteMessage', **{'Type': message_type, 'Content': content, 'OutputMessage': output_message,
-                                          'LogMessage': log_message})
+    return BaseCommand(
+        "WriteMessage",
+        **{
+            "Type": message_type,
+            "Content": content,
+            "OutputMessage": output_message,
+            "LogMessage": log_message,
+        },
+    )
 
 
 def resolve_code(rtype: MessageType, content: str):
     """Create a Resolve message"""
-    return BaseCommand('Resolve', **{'Type': rtype, 'Content': content})
+    return BaseCommand("Resolve", **{"Type": rtype, "Content": content})

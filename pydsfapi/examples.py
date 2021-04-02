@@ -9,7 +9,9 @@ from pydsfapi.initmessages.clientinitmessages import InterceptionMode, Subscript
 
 def intercept():
     """Example of intercepting and interacting with codes"""
-    intercept_connection = pydsfapi.InterceptConnection(InterceptionMode.PRE, debug=True)
+    intercept_connection = pydsfapi.InterceptConnection(
+        InterceptionMode.PRE, debug=True
+    )
     intercept_connection.connect()
 
     try:
@@ -30,7 +32,7 @@ def intercept():
 
                 # Flushing failed so we need to cancel our code
                 if not success:
-                    print('Flush failed')
+                    print("Flush failed")
                     intercept_connection.cancel_code()
                     continue
                 # -------------- END FLUSH ------------------------
@@ -57,7 +59,7 @@ def command():
 
     try:
         # Perform a simple command and wait for its output
-        res = command_connection.perform_simple_code('M115')
+        res = command_connection.perform_simple_code("M115")
         print(res)
     finally:
         command_connection.close()
@@ -65,7 +67,9 @@ def command():
 
 def subscribe():
     """Example of a subscribe connection to get the machine model"""
-    subscribe_connection = pydsfapi.SubscribeConnection(SubscriptionMode.PATCH, debug=True)
+    subscribe_connection = pydsfapi.SubscribeConnection(
+        SubscriptionMode.PATCH, debug=True
+    )
     subscribe_connection.connect()
 
     try:
@@ -94,7 +98,9 @@ def custom_endpoint():
     endpoint = None
     try:
         # Setup the endpoint
-        endpoint = cmd_conn.add_http_endpoint(basecommands.HttpEndpointType.GET, "custom", "getIt")
+        endpoint = cmd_conn.add_http_endpoint(
+            basecommands.HttpEndpointType.GET, "custom", "getIt"
+        )
         # Register our handler to reply on requests
         endpoint.set_endpoint_handler(respond_something)
         # This just simulates doing other things as the above runs async
