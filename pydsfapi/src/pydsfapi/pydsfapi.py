@@ -427,7 +427,7 @@ class BaseCommandConnection(BaseConnection):
     def get_object_model(self):
         """Retrieve the full object model of the machine."""
         res = self.perform_command(
-            basecommands.GET_OBJECT_MODEL, machinemodel.MachineModel
+            basecommands.get_object_model(), machinemodel.MachineModel
         )
         return res.result
 
@@ -441,7 +441,7 @@ class BaseCommandConnection(BaseConnection):
 
     def get_serialized_object_model(self):
         """Optimized method to directly query the machine model UTF-8 JSON"""
-        self.send(basecommands.GET_OBJECT_MODEL)
+        self.send(basecommands.get_object_model())
         return self.receive_json()
 
     def install_plugin(self, plugin_file: str):
@@ -463,7 +463,7 @@ class BaseCommandConnection(BaseConnection):
         Lock the machine model for read/write access.
         It is MANDATORY to call unlock_object_model when write access has finished
         """
-        return self.perform_command(basecommands.LOCK_OBJECT_MODEL)
+        return self.perform_command(basecommands.lock_object_model())
 
     def patch_object_model(self, key: str, patch):
         """
@@ -550,7 +550,7 @@ class BaseCommandConnection(BaseConnection):
 
     def sync_object_model(self):
         """Wait for the full object model to be updated from RepRapFirmware"""
-        return self.perform_command(basecommands.SYNC_OBJECT_MODEL)
+        return self.perform_command(basecommands.sync_object_model())
 
     def uninstall_plugin(self, plugin: str):
         """Uninstall a plugin"""
@@ -567,7 +567,7 @@ class BaseCommandConnection(BaseConnection):
 
     def unlock_object_model(self):
         """Unlock the object model again"""
-        return self.perform_command(basecommands.UNLOCK_OBJECT_MODEL)
+        return self.perform_command(basecommands.unlock_object_model())
 
     def write_message(
         self,
@@ -627,11 +627,11 @@ class InterceptConnection(BaseCommandConnection):
 
     def cancel_code(self):
         """Instruct the control server to cancel the last received code (in intercepting mode)"""
-        self.send(basecommands.CANCEL)
+        self.send(basecommands.cancel())
 
     def ignore_code(self):
         """Instruct the control server to ignore the last received code (in intercepting mode)"""
-        self.send(basecommands.IGNORE)
+        self.send(basecommands.ignore())
 
     def resolve_code(
         self, rtype: MessageType = MessageType.Success, content: str = None
@@ -672,7 +672,7 @@ class SubscribeConnection(BaseConnection):
         ConnectionAbortedError has been established.
         """
         machine_model = self.receive(machinemodel.MachineModel)
-        self.send(basecommands.ACKNOWLEDGE)
+        self.send(basecommands.acknowledge())
         return machine_model
 
     def get_serialized_machine_model(self):
@@ -681,7 +681,7 @@ class SubscribeConnection(BaseConnection):
         May be used to get machine model patches as well.
         """
         machine_model_json = self.receive_json()
-        self.send(basecommands.ACKNOWLEDGE)
+        self.send(basecommands.acknowledge())
         return machine_model_json
 
     def get_machine_model_patch(self):
@@ -692,5 +692,5 @@ class SubscribeConnection(BaseConnection):
         such fragments.
         """
         patch_json = self.receive_json()
-        self.send(basecommands.ACKNOWLEDGE)
+        self.send(basecommands.acknowledge())
         return patch_json

@@ -23,6 +23,42 @@ from typing import Optional
 from .codechannel import CodeChannel
 
 
+class HttpEndpointType(str, Enum):
+    """Enumeration of supported HTTP request types"""
+
+    GET = "GET"
+    POST = "POST"
+    PUT = "PUT"
+    PATCH = "PATCH"
+    TRACE = "TRACE"
+    DELETE = "DELETE"
+    OPTIONS = "OPTIONS"
+    WebSocket = "WebSocket"
+
+
+class AccessLevel(str, Enum):
+    """Defines what a user is allowed to do"""
+
+    ReadOnly = "ReadOnly"
+    ReadWrite = "ReadWrite"
+
+
+class SessionType(str, Enum):
+    """Types of user sessions"""
+
+    Local = "Local"
+    HTTP = "HTTP"
+    Telnet = "Telnet"
+
+
+class MessageType(IntEnum):
+    """Type of Resolve message"""
+
+    Success = 0
+    Warning = 1
+    Error = 2
+
+
 class BaseCommand:
     """Base class of a command."""
 
@@ -37,30 +73,48 @@ class BaseCommand:
             self.__dict__[key] = value
 
 
-ACKNOWLEDGE = BaseCommand("Acknowledge")
-CANCEL = BaseCommand("Cancel")
-IGNORE = BaseCommand("Ignore")
-GET_MACHINE_MODEL = BaseCommand("GetObjectModel")
-GET_OBJECT_MODEL = BaseCommand("GetObjectModel")
-SYNC_MACHINE_MODEL = BaseCommand("SyncObjectModel")
-SYNC_OBJECT_MODEL = BaseCommand("SyncObjectModel")
-LOCK_MACHINE_MODEL = BaseCommand("LockObjectModel")
-LOCK_OBJECT_MODEL = BaseCommand("LockObjectModel")
-UNLOCK_MACHINE_MODEL = BaseCommand("UnlockObjectModel")
-UNLOCK_OBJECT_MODEL = BaseCommand("UnlockObjectModel")
+def acknowledge():
+    return BaseCommand("Acknowledge")
 
 
-class HttpEndpointType(str, Enum):
-    """Enumeration of supported HTTP request types"""
+def cancel():
+    return BaseCommand("Cancel")
 
-    GET = "GET"
-    POST = "POST"
-    PUT = "PUT"
-    PATCH = "PATCH"
-    TRACE = "TRACE"
-    DELETE = "DELETE"
-    OPTIONS = "OPTIONS"
-    WebSocket = "WebSocket"
+
+def ignore():
+    return BaseCommand("Ignore")
+
+
+def get_machine_model():
+    return BaseCommand("GetObjectModel")
+
+
+def get_object_model():
+    return BaseCommand("GetObjectModel")
+
+
+def sync_machine_model():
+    return BaseCommand("SyncObjectModel")
+
+
+def sync_object_model():
+    return BaseCommand("SyncObjectModel")
+
+
+def lock_machine_model():
+    return BaseCommand("LockObjectModel")
+
+
+def lock_object_model():
+    return BaseCommand("LockObjectModel")
+
+
+def unlock_machine_model():
+    return BaseCommand("UnlockObjectModel")
+
+
+def unlock_object_model():
+    return BaseCommand("UnlockObjectModel")
 
 
 def add_http_endpoint(
@@ -93,21 +147,6 @@ def remove_http_endpoint(endpoint_type: HttpEndpointType, namespace: str, path: 
         "RemoveHttpEndpoint",
         **{"EndpointType": endpoint_type, "Namespace": namespace, "Path": path},
     )
-
-
-class AccessLevel(str, Enum):
-    """Defines what a user is allowed to do"""
-
-    ReadOnly = "ReadOnly"
-    ReadWrite = "ReadWrite"
-
-
-class SessionType(str, Enum):
-    """Types of user sessions"""
-
-    Local = "Local"
-    HTTP = "HTTP"
-    Telnet = "Telnet"
 
 
 def add_user_session(
@@ -225,14 +264,6 @@ def uninstall_plugin(plugin: str):
     Uninstall a plugin
     """
     return BaseCommand("UninstallPlugin", **{"Plugin": plugin})
-
-
-class MessageType(IntEnum):
-    """Type of Resolve message"""
-
-    Success = 0
-    Warning = 1
-    Error = 2
 
 
 def write_message(
