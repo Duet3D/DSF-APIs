@@ -167,7 +167,7 @@ class HttpEndpointUnixSocket:
 
         try:
             os.remove(self.socket_path)
-        except:
+        except FileNotFoundError:
             # We don't care if the file was missing
             # TODO: should we care about deletion failed?
             pass
@@ -186,7 +186,7 @@ class HttpEndpointUnixSocket:
         self.executor.shutdown(wait=False)
         try:
             os.remove(self.socket_path)
-        except:
+        except FileNotFoundError:
             pass
 
     def set_endpoint_handler(self, handler):

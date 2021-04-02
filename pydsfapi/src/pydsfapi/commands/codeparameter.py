@@ -149,15 +149,15 @@ class CodeParameter(json.JSONEncoder):
                     self.__parsed_value = list(map(float, split))
                 else:  # If there is no dot, it could be an integer array
                     self.__parsed_value = list(map(int, split))
-            except:
+            except:  # noqa
                 self.__parsed_value = value
         else:
             try:
                 self.__parsed_value = int(value)
-            except:
+            except:  # noqa
                 try:
                     self.__parsed_value = float(value)
-                except:
+                except:  # noqa
                     self.__parsed_value = value
 
     def convert_driver_ids(self):
@@ -227,7 +227,7 @@ class CodeParameter(json.JSONEncoder):
         if isinstance(self.__parsed_value, int):
             try:
                 return DriverId(as_int=self.__parsed_value)
-            except:
+            except:  # noqa
                 pass
         raise Exception(
             "Cannot convert {0} parameter to DriverId (value {1})".format(
@@ -244,7 +244,7 @@ class CodeParameter(json.JSONEncoder):
                 return [self.__parsed_value]
             if isinstance(self.__parsed_value, int):
                 return [float(self.__parsed_value)]
-        except:
+        except:  # noqa
             pass
         raise Exception(
             "Cannot convert {0} parameter to float array (value {1})".format(
@@ -263,7 +263,7 @@ class CodeParameter(json.JSONEncoder):
                 return [self.__parsed_value]
             if isinstance(self.__parsed_value, DriverId):
                 return [self.__parsed_value.as_int()]
-        except:
+        except:  # noqa
             pass
         raise Exception(
             "Cannot convert {0} parameter to float array (value {1})".format(
@@ -282,7 +282,7 @@ class CodeParameter(json.JSONEncoder):
                 return [self.__parsed_value]
             if isinstance(self.__parsed_value, int):
                 return [DriverId(as_int=self.__parsed_value)]
-        except:
+        except:  # noqa
             pass
         raise Exception(
             "Cannot convert {0} parameter to DriverId array (value {1})".format(
@@ -294,7 +294,7 @@ class CodeParameter(json.JSONEncoder):
         """Conversion to bool"""
         try:
             return float(self.string_value) > 0
-        except:
+        except:  # noqa
             return False
 
     def __eq__(self, other):
