@@ -21,6 +21,8 @@ as well as sent back to the server.
 from enum import Enum, IntEnum
 from typing import List
 
+from pydsfapi.commands.codechannel import CodeChannel
+
 from .basecommands import BaseCommand
 from .codeparameter import CodeParameter
 from .result import Message
@@ -100,6 +102,8 @@ class Code(BaseCommand):
             else list(map(Message.from_json, data["result"]))
         )
         data["parameters"] = list(map(CodeParameter.from_json, data["parameters"]))
+        if "channel" in data:
+            data["channel"] = CodeChannel(data["channel"])
         return cls(**data)
 
     def parameter(self, letter: str, default=None):
