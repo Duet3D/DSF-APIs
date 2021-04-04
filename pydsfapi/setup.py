@@ -21,7 +21,6 @@ setup(
         "Topic :: Software Development :: Libraries",
         "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
@@ -31,10 +30,11 @@ setup(
     keywords="Duet3D, DuetSoftwareFramework, DSF",
     package_dir={"": "src"},
     packages=find_packages(where="src"),
-    python_requires=">=3.5, <4",
+    python_requires=">=3.6, <4",
     extras_require={
         "dev": [
             "sphinx",
+            "tox",
         ],
     },
     project_urls={

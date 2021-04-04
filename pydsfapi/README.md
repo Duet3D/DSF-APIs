@@ -1,8 +1,11 @@
 # pydsfapi
-Python interface to access DuetSoftwareFramework. It requires at least Python 3.5.
+Python interface to access DuetSoftwareFramework.
 
-# Installation
-This package contains a `setup.py` so it can be installed easily with `distutils`.
+## Installation
+This package contains a `setup.py` so it can be installed with `python3 setup.py install`.
 
-## Examples
-See included `examples.py` for some usage examples.
+## Usage
+See included `examples/` folder for various use cases.
+
+## License
+All files of `pydsfapi` are licensed under LGPLv3.

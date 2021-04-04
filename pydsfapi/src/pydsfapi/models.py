@@ -22,6 +22,17 @@ from datetime import datetime
 from typing import List
 
 
+class MachineModel(dict):
+    """
+    MachineModel provides generic access to the machine model.
+    """
+
+    @classmethod
+    def from_json(cls, data):
+        """Deserialize an instance of this class from JSON deserialized dictionary"""
+        return cls(**data)
+
+
 class ParsedFileInfo:
     """Holds information about a parsed G-code file"""
 
