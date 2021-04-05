@@ -7,13 +7,16 @@ Make sure when running this script to have access to the DSF UNIX socket owned b
 """
 
 import subprocess
+import traceback
 
-import pydsfapi
+from pydsfapi.connections import InterceptConnection
 from pydsfapi.commands.basecommands import MessageType
+from pydsfapi.commands.code import CodeType
+from pydsfapi.initmessages.clientinitmessages import InterceptionMode
 
 
 def start_intercept():
-    intercept_connection = pydsfapi.InterceptConnection(pydsfapi.InterceptionMode.PRE)
+    intercept_connection = InterceptConnection(InterceptionMode.PRE, debug=True)
     intercept_connection.connect()
 
     try:
@@ -22,7 +25,7 @@ def start_intercept():
             cde = intercept_connection.receive_code()
 
             # Check for the type of the code
-            if cde.type == pydsfapi.CodeType.MCode and cde.majorNumber == 1234:
+            if cde.type == CodeType.MCode and cde.majorNumber == 1234:
                 # --------------- BEGIN FLUSH ---------------------
                 # Flushing is only necessary if the action below needs to be in sync with the machine
                 # at this point in the GCode stream. Otherwise it can an should be skipped
@@ -42,8 +45,13 @@ def start_intercept():
 
                 # Resolve it so that DCS knows we took care of it
                 intercept_connection.resolve_code()
-            elif cde.type == pydsfapi.CodeType.MCode and cde.majorNumber == 7722:
-                # Do whatever needs to be done if this is the right code
+            elif cde.type == CodeType.MCode and cde.majorNumber == 5678:
+                intercept_connection.resolve_code()
+                intercept_connection.close()
+                # Exit this example
+                return
+            elif cde.type == CodeType.MCode and cde.majorNumber == 7722:
+                # We are going to shut down the SBC in one minute
                 subprocess.run(["sudo", "shutdown", "+1"])
                 # Resolve it with a custom response message text
                 intercept_connection.resolve_code(
@@ -54,6 +62,7 @@ def start_intercept():
                 intercept_connection.ignore_code()
     except Exception as e:
         print("Closing connection: ", e)
+        traceback.print_exc()
         intercept_connection.close()
 
 

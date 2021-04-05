@@ -8,9 +8,9 @@ Make sure when running this script to have access to the DSF UNIX socket owned b
 
 import time
 
-import pydsfapi
+from pydsfapi.connections import CommandConnection
 from pydsfapi.commands.basecommands import HttpEndpointType
-from pydsfapi.http_endpoint import HttpEndpointConnection
+from pydsfapi.http import HttpEndpointConnection
 
 
 async def respond_something(http_endpoint_connection: HttpEndpointConnection):
@@ -20,21 +20,26 @@ async def respond_something(http_endpoint_connection: HttpEndpointConnection):
 
 
 def custom_http_endpoint():
-    cmd_conn = pydsfapi.CommandConnection()
+    cmd_conn = CommandConnection(debug=True)
     cmd_conn.connect()
     endpoint = None
+
+    # Setup the endpoint
+    endpoint = cmd_conn.add_http_endpoint(HttpEndpointType.GET, "custom", "getIt")
+    # Register our handler to reply on requests
+    endpoint.set_endpoint_handler(respond_something)
+
+    print("Try accessing http://duet3/machine/custom/getIt in your browser...")
+
+    return cmd_conn, endpoint
+
+
+if __name__ == "__main__":
     try:
-        # Setup the endpoint
-        endpoint = cmd_conn.add_http_endpoint(HttpEndpointType.GET, "custom", "getIt")
-        # Register our handler to reply on requests
-        endpoint.set_endpoint_handler(respond_something)
-        # This just simulates doing other things as the above runs async
+        cmd_conn, endpoint = custom_http_endpoint()
+        # This just simulates doing other things as the new endpoint handler runs async
         time.sleep(1800)
     finally:
         if endpoint is not None:
             endpoint.close()
         cmd_conn.close()
-
-
-if __name__ == "__main__":
-    custom_http_endpoint()

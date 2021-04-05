@@ -6,12 +6,12 @@ Example of a subscribe connection to get the machine model
 Make sure when running this script to have access to the DSF UNIX socket owned by the dsf user.
 """
 
-import pydsfapi
-from pydsfapi import SubscriptionMode
+from pydsfapi.connections import SubscribeConnection
+from pydsfapi.initmessages.clientinitmessages import SubscriptionMode
 
 
 def subscribe():
-    subscribe_connection = pydsfapi.SubscribeConnection(SubscriptionMode.PATCH)
+    subscribe_connection = SubscribeConnection(SubscriptionMode.PATCH)
     subscribe_connection.connect()
 
     try:
@@ -21,7 +21,7 @@ def subscribe():
 
         # Get multiple incremental updates, due to SubscriptionMode.PATCH, only a
         # subset of the object model will be updated
-        for _ in range(0, 10):
+        for _ in range(0, 3):
             update = subscribe_connection.get_machine_model_patch()
             print(update)
     finally:
