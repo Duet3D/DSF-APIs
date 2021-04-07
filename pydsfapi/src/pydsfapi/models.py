@@ -1,5 +1,6 @@
 """
-result contains classes relevant to result messages from the server
+parsedfileinfo contains classes related to file information parsed
+by RepRapFirmware.
 
     Python interface to DuetSoftwareFramework
     Copyright (C) 2020 Duet3D
@@ -17,42 +18,49 @@ result contains classes relevant to result messages from the server
     You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-from enum import IntEnum
 from datetime import datetime
+from typing import List
 
 
-class MessageType(IntEnum):
-    """Type of a generic message"""
-    Success = 0
-    Warning = 1
-    Error = 2
+class MachineModel(dict):
+    """
+    MachineModel provides generic access to the machine model.
+    """
 
-
-class Message:
-    """Generic container for messages"""
     @classmethod
     def from_json(cls, data):
         """Deserialize an instance of this class from JSON deserialized dictionary"""
         return cls(**data)
 
-    def __init__(self, type: MessageType, time: datetime, content: str):
-        self.type = type
-        self.time = time
-        self.content = content
 
+class ParsedFileInfo:
+    """Holds information about a parsed G-code file"""
 
-class CodeResult:
-    """
-    List-based representation of a code result.
-    Each item represents a Message instance which can be easily converted to a string
-    Deprecated: Will be replaced by Message in foreseeable future
-    """
     @classmethod
     def from_json(cls, data):
         """Deserialize an instance of this class from JSON deserialized dictionary"""
-        if data is None:
-            return cls([])
-        return cls(list(map(Message.from_json, data)))
+        return cls(**data)
 
-    def __init__(self, messages: [Message]):
-        self.messages = messages
+    def __init__(
+        self,
+        fileName: str,
+        size: int,
+        lastModified: datetime,
+        height: float,
+        firstLayerHeight: float,
+        numLayers: int,
+        filament: List[float],
+        generatedBy: str,
+        printTime: int,
+        simulatedTime: int,
+    ):
+        self.file_name = fileName
+        self.size = size
+        self.last_modified = lastModified
+        self.height = height
+        self.first_layer_height = firstLayerHeight
+        self.num_layers = numLayers
+        self.filament = filament
+        self.generated_by = generatedBy
+        self.print_time = printTime
+        self.simulated_time = simulatedTime

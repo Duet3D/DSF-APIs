@@ -1,6 +1,15 @@
-Session.vim
-__pycache__
-MANIFEST
+# general things to ignore
 build/
 dist/
-.idea
+*.egg-info/
+*.egg
+*.py[cod]
+__pycache__/
+*.so
+*~
+
+# due to using tox and pytest
+.tox
+.cache
+
+MANIFEST

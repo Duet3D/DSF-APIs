@@ -28,6 +28,7 @@ class ServerInitMessage:
     An instance of this class is sent by the server to the client
     in JSON format once a connection has been established.
     """
+
     @classmethod
     def from_json(cls, data):
         """Deserialize a dictionary coming from JSON into an instance of this class"""

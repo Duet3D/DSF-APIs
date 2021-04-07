@@ -23,10 +23,11 @@ from .serverinitmessage import ServerInitMessage
 
 class ConnectionMode(str, Enum):
     """Supported connection types for client connections"""
-    UNKNOWN = 'Unknown'
-    COMMAND = 'Command'
-    INTERCEPT = 'Intercept'
-    SUBSCRIBE = 'Subscribe'
+
+    UNKNOWN = "Unknown"
+    COMMAND = "Command"
+    INTERCEPT = "Intercept"
+    SUBSCRIBE = "Subscribe"
 
 
 class ClientInitMessage:
@@ -34,6 +35,7 @@ class ClientInitMessage:
     An instance of this class is sent from the client to the server as a response
     to the ServerInitMessage. It allows a client to select the connection mode.
     """
+
     def __init__(self, mode: ConnectionMode = ConnectionMode.UNKNOWN, **kwargs):
         self.mode = mode
         self.version = ServerInitMessage.PROTOCOL_VERSION
@@ -43,21 +45,25 @@ class ClientInitMessage:
 
 class InterceptionMode(str, Enum):
     """Type of the intercepting connection"""
-    PRE = 'Pre'
-    POST = 'Post'
-    EXECUTED = 'Executed'
+
+    PRE = "Pre"
+    POST = "Post"
+    EXECUTED = "Executed"
 
 
-def intercept_init_message(intercept_mode: InterceptionMode, channels, filters,
-                           priority_codes: bool):
+def intercept_init_message(
+    intercept_mode: InterceptionMode, channels, filters, priority_codes: bool
+):
     """Enter interception mode"""
     return ClientInitMessage(
-        ConnectionMode.INTERCEPT, **{
-            'InterceptionMode': intercept_mode,
-            'Channels': channels,
-            'Filters': filters,
-            'PriorityCodes': priority_codes,
-        })
+        ConnectionMode.INTERCEPT,
+        **{
+            "InterceptionMode": intercept_mode,
+            "Channels": channels,
+            "Filters": filters,
+            "PriorityCodes": priority_codes,
+        },
+    )
 
 
 def command_init_message():
@@ -67,14 +73,20 @@ def command_init_message():
 
 class SubscriptionMode(str, Enum):
     """Type of the model subscription"""
-    FULL = 'Full'
-    PATCH = 'Patch'
+
+    FULL = "Full"
+    PATCH = "Patch"
 
 
-def subscribe_init_message(subscription_mode: SubscriptionMode, filter_string: str, filter_list):
+def subscribe_init_message(
+    subscription_mode: SubscriptionMode, filter_string: str, filter_list
+):
     """Enter subscription mode"""
-    return ClientInitMessage(ConnectionMode.SUBSCRIBE, **{
-        'SubscriptionMode': subscription_mode,
-        'Filter': filter_string,
-        'Filters': filter_list,
-    })
+    return ClientInitMessage(
+        ConnectionMode.SUBSCRIBE,
+        **{
+            "SubscriptionMode": subscription_mode,
+            "Filter": filter_string,
+            "Filters": filter_list,
+        },
+    )
