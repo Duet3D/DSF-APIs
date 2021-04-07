@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 """
 Example of intercepting and interacting with codes
 
@@ -16,7 +15,10 @@ from pydsfapi.initmessages.clientinitmessages import InterceptionMode
 
 
 def start_intercept():
-    intercept_connection = InterceptConnection(InterceptionMode.PRE, debug=True)
+    filters = ["M1234", "M5678", "M7722"]
+    intercept_connection = InterceptConnection(
+        InterceptionMode.PRE, filters=filters, debug=True
+    )
     intercept_connection.connect()
 
     try:

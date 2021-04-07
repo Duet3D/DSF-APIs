@@ -14,7 +14,7 @@ setup(
     long_description_content_type="text/markdown",
     url="https://github.com/Duet3D/DSF-APIs",
     author="Manuel Coenen",
-    author_email="manuel.coenen@gmail.com",
+    author_email="manuel@duet3d.com",
     classifiers=[
         "Development Status :: 3 - Production/Stable",
         "Intended Audience :: Developers",
