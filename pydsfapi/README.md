@@ -9,3 +9,8 @@ See included `examples/` folder for various use cases.
 
 ## License
 All files of `pydsfapi` are licensed under LGPLv3.
+
+## Development
+For development install globally `pip install tox` or locally `pip install --user tox`.
+
+Run test suite tox.
