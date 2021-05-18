@@ -26,10 +26,10 @@ def test_custom_m_codes(monkeypatch, tmp_path):
         server.bind(mock_dcs_socket_path)
         server.listen(1)
         conn, _ = server.accept()
-        conn.sendall(b'{"version": 10, "id": "foobar"}')
+        conn.sendall(b'{"version": 11, "id": "foobar"}')
         assert (
             conn.recv(1024) == b"{"
-            b'"mode":"Intercept","version":10,"InterceptionMode":"Pre","Channels":["HTTP","Telnet",'
+            b'"mode":"Intercept","version": 11,"InterceptionMode":"Pre","Channels":["HTTP","Telnet",'
             b'"File","USB","Aux","Trigger","Queue","LCD","SBC","Daemon","Aux2","AutoPause","Unknown"],'
             b'"Filters":null,"PriorityCodes":false'
             b"}"

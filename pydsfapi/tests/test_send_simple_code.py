@@ -27,8 +27,8 @@ def test_send_simple_code(monkeypatch, tmp_path):
         server.bind(mock_dcs_socket_path)
         server.listen(1)
         conn, _ = server.accept()
-        conn.sendall('{"version": 10, "id": "foobar"}'.encode())
-        assert conn.recv(1024) == b'{"mode":"Command","version":10}'
+        conn.sendall('{"version": 11, "id": "foobar"}'.encode())
+        assert conn.recv(1024) == b'{"mode":"Command","version": 11}'
         conn.sendall('{"success":true}'.encode())
         assert (
             conn.recv(1024) == b'{"command":"SimpleCode","Code":"M115","Channel":"SBC"}'
