@@ -11,6 +11,8 @@ See included `examples/` folder for various use cases.
 All files of `pydsfapi` are licensed under LGPLv3.
 
 ## Development
-For development install globally `pip install tox` or locally `pip install --user tox`.
+For development install globally `pip install sphinx tox` or locally `pip install --user sphinx tox`.
 
-Run test suite tox.
+For further information visit:
+- [Tox](https://tox.readthedocs.io/en/latest/)
+- [Sphinx](https://docs.readthedocs.io/en/stable/intro/getting-started-with-sphinx.html)
