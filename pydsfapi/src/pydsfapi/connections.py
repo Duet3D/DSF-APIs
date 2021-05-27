@@ -114,7 +114,7 @@ class BaseConnection:
             msg, separators=(",", ":"), default=lambda o: o.__dict__
         )
         if self.debug:
-            print("send: {0}".format(json_string))
+            print(json_string)
         self.socket.sendall(json_string.encode("utf8"))
 
     def receive(self, cls):
@@ -171,7 +171,7 @@ class BaseConnection:
                     found = True
 
         if self.debug:
-            print("recv:", json_string)
+            print(json_string)
         return json_string
 
     @staticmethod
