@@ -50,8 +50,9 @@ class BaseConnection:
     using a UNIX socket
     """
 
-    def __init__(self, debug: bool = False):
+    def __init__(self, debug: bool = False, timeout: int = 3):
         self.debug = debug
+        self.timeout = timeout
         self.socket: Optional[socket.socket] = None
         self.id = None
         self.input = ""
@@ -63,7 +64,7 @@ class BaseConnection:
 
         self.socket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
         self.socket.connect(socket_path)
-        self.socket.setblocking(True)
+        self.socket.settimeout(self.timeout)
         server_init_message = serverinitmessage.ServerInitMessage.from_json(
             json.loads(self.socket.recv(50).decode("utf8"))
         )
@@ -148,11 +149,17 @@ class BaseConnection:
                 BUFF_SIZE = 4096  # 4 KiB
                 data = b""
                 while True:
-                    part = self.socket.recv(BUFF_SIZE)
-                    data += part
+                    try:
+                        part = self.socket.recv(BUFF_SIZE)
+                        data += part
+                    except Exception as e:
+                        raise e
                     # either 0 or end of data
+                    if len(part) == 0:
+                        raise TimeoutError
                     if len(part) < BUFF_SIZE:
                         break
+
                 json_string += data.decode("utf8")
 
                 end_index = self.get_json_object_end_index(json_string)
