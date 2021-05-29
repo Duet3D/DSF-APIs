@@ -1,4 +1,2 @@
-SOCKET_DIRECTORY = "/run/dsf"
-SOCKET_FILE = "dcs.sock"
-FULL_SOCKET_PATH = SOCKET_DIRECTORY + "/" + SOCKET_FILE
+SOCKET_FILE = "/run/dsf/dsf.sock"
 DEFAULT_BACKLOG = 4

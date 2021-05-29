@@ -22,7 +22,7 @@ import os
 import socket
 from typing import Optional
 
-from . import DEFAULT_BACKLOG, FULL_SOCKET_PATH
+from . import DEFAULT_BACKLOG, SOCKET_PATH
 from .commands import responses, basecommands, code, result, codechannel
 from .commands.basecommands import MessageType, LogLevel
 from .initmessages import serverinitmessage, clientinitmessages
@@ -417,7 +417,7 @@ class BaseCommandConnection(BaseConnection):
 class CommandConnection(BaseCommandConnection):
     """Connection class for sending commands to the control server"""
 
-    def connect(self, socket_path: str = FULL_SOCKET_PATH):  # type: ignore
+    def connect(self, socket_path: str = SOCKET_PATH):  # type: ignore
         """Establishes a connection to the given UNIX socket file"""
         return super().connect(clientinitmessages.command_init_message(), socket_path)
 
@@ -442,7 +442,7 @@ class InterceptConnection(BaseCommandConnection):
         self.filters = filters
         self.priority_codes = priority_codes
 
-    def connect(self, socket_path: str = FULL_SOCKET_PATH):  # type: ignore
+    def connect(self, socket_path: str = SOCKET_PATH):  # type: ignore
         """Establishes a connection to the given UNIX socket file"""
         iim = clientinitmessages.intercept_init_message(
             self.interception_mode, self.channels, self.filters, self.priority_codes
@@ -491,7 +491,7 @@ class SubscribeConnection(BaseConnection):
         self.filter_str = filter_str
         self.filter_list = filter_list
 
-    def connect(self, socket_path: str = FULL_SOCKET_PATH):  # type: ignore
+    def connect(self, socket_path: str = SOCKET_PATH):  # type: ignore
         """Establishes a connection to the given UNIX socket file"""
         sim = clientinitmessages.subscribe_init_message(
             self.subscription_mode, self.filter_str, self.filter_list
