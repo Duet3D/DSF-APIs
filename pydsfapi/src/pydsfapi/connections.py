@@ -22,7 +22,7 @@ import os
 import socket
 from typing import Optional
 
-from . import DEFAULT_BACKLOG, SOCKET_PATH
+from . import DEFAULT_BACKLOG, SOCKET_FILE
 from .commands import responses, basecommands, code, result, codechannel
 from .commands.basecommands import MessageType, LogLevel
 from .initmessages import serverinitmessage, clientinitmessages
@@ -58,12 +58,12 @@ class BaseConnection:
         self.input = ""
 
     def connect(
-        self, init_message: clientinitmessages.ClientInitMessage, socket_path: str
+        self, init_message: clientinitmessages.ClientInitMessage, socket_file: str
     ):
         """Establishes a connection to the given UNIX socket file"""
 
         self.socket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-        self.socket.connect(socket_path)
+        self.socket.connect(socket_file)
         self.socket.settimeout(self.timeout)
         server_init_message = serverinitmessage.ServerInitMessage.from_json(
             json.loads(self.socket.recv(50).decode("utf8"))
@@ -217,9 +217,9 @@ class BaseCommandConnection(BaseConnection):
                 endpoint_type, namespace, path, is_upload_request
             )
         )
-        socket_path = res.result
+        socket_file = res.result
         return HttpEndpointUnixSocket(
-            endpoint_type, namespace, path, socket_path, backlog, self.debug
+            endpoint_type, namespace, path, socket_file, backlog, self.debug
         )
 
     def add_user_session(
@@ -417,9 +417,9 @@ class BaseCommandConnection(BaseConnection):
 class CommandConnection(BaseCommandConnection):
     """Connection class for sending commands to the control server"""
 
-    def connect(self, socket_path: str = SOCKET_PATH):  # type: ignore
+    def connect(self, socket_file: str = SOCKET_FILE):  # type: ignore
         """Establishes a connection to the given UNIX socket file"""
-        return super().connect(clientinitmessages.command_init_message(), socket_path)
+        return super().connect(clientinitmessages.command_init_message(), socket_file)
 
 
 class InterceptConnection(BaseCommandConnection):
@@ -435,20 +435,20 @@ class InterceptConnection(BaseCommandConnection):
     ):
         super().__init__(debug)
         self.interception_mode = interception_mode
-        if channels is not None:
+        if channels:
             self.channels = channels
         else:
             self.channels = codechannel.CodeChannel.list()
         self.filters = filters
         self.priority_codes = priority_codes
 
-    def connect(self, socket_path: str = SOCKET_PATH):  # type: ignore
+    def connect(self, socket_file: str = SOCKET_FILE):  # type: ignore
         """Establishes a connection to the given UNIX socket file"""
         iim = clientinitmessages.intercept_init_message(
             self.interception_mode, self.channels, self.filters, self.priority_codes
         )
 
-        return super().connect(iim, socket_path)
+        return super().connect(iim, socket_file)
 
     def receive_code(self) -> code.Code:
         """Wait for a code to be intercepted and read it"""
@@ -491,12 +491,12 @@ class SubscribeConnection(BaseConnection):
         self.filter_str = filter_str
         self.filter_list = filter_list
 
-    def connect(self, socket_path: str = SOCKET_PATH):  # type: ignore
+    def connect(self, socket_file: str = SOCKET_FILE):  # type: ignore
         """Establishes a connection to the given UNIX socket file"""
         sim = clientinitmessages.subscribe_init_message(
             self.subscription_mode, self.filter_str, self.filter_list
         )
-        return super().connect(sim, socket_path)
+        return super().connect(sim, socket_file)
 
     def get_machine_model(self) -> MachineModel:
         """
