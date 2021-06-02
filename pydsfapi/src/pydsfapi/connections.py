@@ -30,18 +30,24 @@ from .http import HttpEndpointUnixSocket
 from .models import MachineModel, ParsedFileInfo
 
 
-class TaskCanceledException(Exception):
-    """Exception returned by the server if the task has been cancelled remotely"""
+class DsfException(Exception):
+    """Base class for all DSF exceptions"""
+    def __init__(self, message):
+        super().__init__(message)
 
 
-class InternalServerException(Exception):
+class InternalServerException(DsfException):
     """Exception returned by the server for an arbitrary problem"""
 
-    def __init__(self, command, error_type: str, error_message: str):
+    def __init__(self):
         super().__init__("Internal Server Exception")
-        self.command = command
-        self.error_type = error_type
-        self.error_message = error_message
+
+
+class ErrorResponseException(DsfException):
+    """Exception returned if an Error Response is received"""
+
+    def __init__(self, error_type: str, error_message: str):
+        super().__init__("{}: {}".format(error_type, error_message))
 
 
 class BaseConnection:
@@ -96,17 +102,9 @@ class BaseConnection:
         self.send(command)
 
         response = self.receive_response()
-        if response.success:
-            if cls is not None and response.result is not None:
-                response.result = cls.from_json(response.result)
-            return response
-
-        if response.error_type == "TaskCanceledException":
-            raise TaskCanceledException(response.error_message)
-
-        raise InternalServerException(
-            command, response.error_type, response.error_message
-        )
+        if cls is not None and response.result is not None:
+            response.result = cls.from_json(response.result)
+        return response
 
     def send(self, msg):
         """Serialize an arbitrary object into JSON and send it to the server plus NL"""
@@ -125,7 +123,22 @@ class BaseConnection:
     def receive_response(self):
         """Receive a base response from the server"""
         json_string = self.receive_json()
-        return json.loads(json_string, object_hook=responses.decode_response)
+        resp = json.loads(json_string, object_hook=responses.decode_response)
+
+        print("received success: {} data: {}".format(resp.success, resp.result))
+        if resp.success is True:
+            if resp.result:
+                resp.result = resp.result.strip()
+            return resp
+
+        if resp.success is False and resp.error_type is True:
+            print("recived error response", resp.success, resp.error_type, resp.error_message)
+            raise ErrorResponseException(resp.error_type, resp.error_message)
+
+        if resp.result and len(re.sub(r'\n', '', resp.result)) == 0:
+            raise TimeoutError
+
+        raise InternalServerException("InternalReceiveError", "Failed to handle exception gracefully")
 
     def receive_json(self) -> str:
         """Receive the JSON response from the server"""
@@ -148,10 +161,13 @@ class BaseConnection:
                 # Refill the buffer and check again
                 BUFF_SIZE = 4096  # 4 KiB
                 data = b""
+                part = b""
                 while True:
                     try:
                         part = self.socket.recv(BUFF_SIZE)
                         data += part
+                    except socket.timeout:
+                        pass
                     except Exception as e:
                         raise e
                     # either 0 or end of data
