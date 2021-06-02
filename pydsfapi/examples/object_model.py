@@ -41,9 +41,9 @@ class TestMcode:
 mcodes = [
     TestMcode(code=115, result='FIRMWARE_NAME: RepRapFirmware for Duet 3 Mini 5\+ FIRMWARE_VERSION: .+ ELECTRONICS: .+ FIRMWARE_DATE: .+', desc="Print firmware version or set hardware type"),
     TestMcode(code=409, param="F\"v\"", desc="Get object model values in JSON format", result='{"key":"","flags":"v","result":{"boards":\[{}\],"directories":{},"fans":\[{},{},{}\],"global":{},"heat":{},"inputs":\[{},{},{},{},{},{},{},{},{},{},{},{}\],"job":{},"limits":{},"move":{},"network":{},"scanner":{},"sensors":{},"seqs":{},"spindles":\[{},{}\],"state":{},"tools":\[{}\],"volumes":\[{},{}\]}}'),
-    # TestMcode(code=409, param="K\"boards\" F\"d99vn\"", desc="Get object model values in JSON format"),
+    TestMcode(code=409, param="K\"boards\" F\"d99vn\"", desc="Get object model values in JSON format", result='{"key":"boards","flags":"d99vn","result":\[{"canAddress":\d+,"directDisplay":\w+,"firmwareDate":"[\d-]+","firmwareFileName":"[\w_\.]+".*,"firmwareName":"[\w_ \+\.]+","firmwareVersion":"[\w\-_\.]+","iapFileNameSBC":"[\w\-_\.]+","iapFileNameSD":"[\w\-_\.]+","maxHeaters":\d+,"maxMotors":\d+,"mcuTemp":{"current":\d+.\d+,"max":\d+.\d+,"min":\d+.\d+},"name":"[\w \-_\+\.]+","shortName":"[\w \-_\+\.]+","supportsDirectDisplay":(true|false),"uniqueId":"[\w-]+","vIn":{"current":\d+.\d+,"max":\d+.\d+,"min":\d+.\d+}}\],"next":\d+}'),
     # TestMcode(code=409, param="K\"boards\" F\"d2vn\"", desc="Get object model values in JSON format"),
-    # TestMcode(code=409, param="K\"directories\" F\"d99vn\"", desc="Get object model values in JSON format"),
+    TestMcode(code=409, param="K\"directories\" F\"d99vn\"", desc="Get object model values in JSON format", result='{"key":"directories","flags":"d99vn","result":{"filaments":"\d:/filaments/","firmware":"\d:/firmware/","gCodes":"\d:/gcodes/","macros":"\d:/macros/","menu":"\d:/menu/","scans":"\d:/scans/","system":"\d:/sys/","web":"\d:/www/"}}'),
     # TestMcode(code=409, param="K\"fans\" F\"d99vn\"", desc="Get object model values in JSON format"),
     # TestMcode(code=409, param="K\"global\" F\"d99vn\"", desc="Get object model values in JSON format"),
     # TestMcode(code=409, param="K\"heat\" F\"d99vn\"", desc="Get object model values in JSON format"),
