@@ -40,7 +40,7 @@ class TestMcode:
 
 mcodes = [
     TestMcode(code=115, result='FIRMWARE_NAME: RepRapFirmware for Duet 3 Mini 5\+ FIRMWARE_VERSION: .+ ELECTRONICS: .+ FIRMWARE_DATE: .+', desc="Print firmware version or set hardware type"),
-    # TestMcode(code=409, param="F\"v\"", desc="Get object model values in JSON format"),
+    TestMcode(code=409, param="F\"v\"", desc="Get object model values in JSON format", result='{"key":"","flags":"v","result":{"boards":\[{}\],"directories":{},"fans":\[{},{},{}\],"global":{},"heat":{},"inputs":\[{},{},{},{},{},{},{},{},{},{},{},{}\],"job":{},"limits":{},"move":{},"network":{},"scanner":{},"sensors":{},"seqs":{},"spindles":\[{},{}\],"state":{},"tools":\[{}\],"volumes":\[{},{}\]}}'),
     # TestMcode(code=409, param="K\"boards\" F\"d99vn\"", desc="Get object model values in JSON format"),
     # TestMcode(code=409, param="K\"boards\" F\"d2vn\"", desc="Get object model values in JSON format"),
     # TestMcode(code=409, param="K\"directories\" F\"d99vn\"", desc="Get object model values in JSON format"),
