@@ -4,6 +4,7 @@ from pydsfapi.connections import CommandConnection
 
 import re
 import logging
+import json
 
 
 class TestMcode:
@@ -63,6 +64,31 @@ mcodes = [
 ]
 
 
+def printKeys(parent, dic):
+
+    if isinstance(dic, dict):
+        for key, val in dic.items():
+            print("{}, {}".format(parent + '/' + key, type(val)))
+
+            if isinstance(val, dict):
+                printKeys(parent + '/' + key, val)
+                return
+            if isinstance(val, list):
+                for elem in val:
+                    printKeys(parent + '/' + key, elem)
+                    return
+
+
+def testPrintKeys(result):
+    try:
+        j = json.loads(result)
+    except Exception as error:
+        logging.error("Failed to parse json {}\n    {}".format(error, result))
+        return
+
+    printKeys("", j)
+
+
 def send_all():
     conn = CommandConnection(debug=False)
     conn.connect()
@@ -80,10 +106,13 @@ def send_all():
             logging.error("Error: {}".format(error))
             break
 
-        if (entry.test(result)):
-            logging.info("{}: OK".format(entry.getCommand()))
-        else:
-            logging.error("{}: FAIL".format(entry.getCommand()))
+        # if (entry.test(result)):
+            # logging.info("{}: OK".format(entry.getCommand()))
+        # else:
+            # logging.error("{}: FAIL".format(entry.getCommand()))
+
+        entry.print()
+        testPrintKeys(result)
 
     conn.close()
     print("closed connection")
