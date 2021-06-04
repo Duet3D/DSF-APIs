@@ -39,6 +39,7 @@ class Message:
         return cls(**data)
 
     def __init__(self, type: MessageType, time: datetime, content: str):
+        print("*** type {} time {} content {}".format(type, time, content))
         self.type = type
         self.time = time
         self.content = content
@@ -54,6 +55,7 @@ class CodeResult:
     @classmethod
     def from_json(cls, data):
         """Deserialize an instance of this class from JSON deserialized dictionary"""
+        print("*** data {}".format(data))
         if data is None:
             return cls([])
         return cls(list(map(Message.from_json, data)))

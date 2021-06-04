@@ -15,4 +15,27 @@ For development install globally `pip install sphinx tox` or locally `pip instal
 
 For further information visit:
 - [Tox](https://tox.readthedocs.io/en/latest/)
+- [Setuptools](https://pypi.org/project/setuptools/)
+- [Pytest](https://pytest.org/) install pytest to run test scripts
+- [MyPy](http://www.mypy-lang.org/)
+- [Black](https://github.com/psf/black)
+- [Flake8](http://flake8.pycqa.org)
 - [Sphinx](https://docs.readthedocs.io/en/stable/intro/getting-started-with-sphinx.html)
+-
+### connect to SBC and froward remote socket to local machine
+
+```sh
+$ export DSF_SOCK=/tmp/dsf/dsf.sock; mkdir -p $(dirname $DSF_SOCK) && ssh -N -L $DSF_SOCK:/var/run/dsf/dcs.sock pi@duet3.local
+```
+
+### run all tests
+
+```sh
+$ pytest tests
+```
+
+### run single test
+
+```sh
+$ pytest tests/test_name.py
+```

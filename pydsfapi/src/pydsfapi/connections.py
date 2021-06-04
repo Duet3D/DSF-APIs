@@ -49,6 +49,27 @@ class ErrorResponseException(DsfException):
     def __init__(self, error_type: str, error_message: str):
         super().__init__("{}: {}".format(error_type, error_message))
 
+# more errors and warnings exceptions add exceptions?
+# "NotImplementedError" Error: M3: Command is not supported in machine mode FFF
+# "NotImplementedError" Error: Operation is not supported
+# "NotImplementedError" Error: M260: I2C not available
+# "MissingParameter" Error: M42: missing parameter 'P' or Error: M118: missing parameter 'S' or Error: M307: missing parameter 'H' or Error: M581: missing parameter 'T' or Error: M591: missing parameter 'D'
+# "OutOfRangeError" Error: M593: parameter 'F' too low
+# "DeprecationWarning" Error: M305: M305 has been replaced by M308 and M950 in RepRapFirmware 3
+#
+# "FileNotFoundError" Error: M24: Cannot print, because no file is selected!
+#
+# "AlreadyStopped" Error: M25: Cannot pause print, because no file is being printed!
+# "SHA1Error" Error: M38: Could not compute SHA1 checksum for file F a l s e: Could not find file '/F a l s e'.
+#
+
+# "FileNotFound" Error: M375: Failed to load height map from file heightmap.csv: Could not find file '/opt/dsf/sd/sys/heightmap.csv'.
+# "DirectoryNotFound" Error: M470: Missing directory name
+# "RenamingError" Error: M471: Failed to rename file or directory  to : Value cannot be null. (Parameter 'input')
+
+# "NetworkError" Error: M540: Network-related commands are not supported when using an attached Single Board Computer
+# "InvalidStateError" Error: M585: a axis has not been homed
+
 
 class BaseConnection:
     """
@@ -125,14 +146,18 @@ class BaseConnection:
         json_string = self.receive_json()
         resp = json.loads(json_string, object_hook=responses.decode_response)
 
-        print("received success: {} data: {}".format(resp.success, resp.result))
+        if self.debug:
+            print("received success: {} data: {}".format(resp.success, resp.result))
+
         if resp.success is True:
             if resp.result:
                 resp.result = resp.result.strip()
             return resp
 
         if resp.success is False and resp.error_type is True:
-            print("recived error response", resp.success, resp.error_type, resp.error_message)
+            if self.debug:
+                print("recived error response", resp.success, resp.error_type, resp.error_message)
+
             raise ErrorResponseException(resp.error_type, resp.error_message)
 
         if resp.result and len(re.sub(r'\n', '', resp.result)) == 0:
@@ -187,7 +212,19 @@ class BaseConnection:
                     found = True
 
         if self.debug:
-            print(json_string)
+            try:
+                d = json.loads(json_string)
+                print(list(d))
+                print("success:", d['success'])
+            except Exception as e:
+                print("Failed to parse response:", e, json_string)
+
+            try:
+                result = json.loads(d['result'])
+                print("result:", json.dumps(result, indent=4))
+            except Exception as e:
+                print("Failed to parse result:", e, json_string)
+
         return json_string
 
     @staticmethod

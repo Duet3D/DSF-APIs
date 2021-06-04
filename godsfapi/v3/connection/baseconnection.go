@@ -22,7 +22,7 @@ const (
 	// IncompatibleVersionException is the name of a remote exception to be checked for
 	IncompatibleVersionException = "IncompatibleVersionException"
 	// SocketDirectory is the default directory in which DSF-related UNIX sockets reside
-	SocketDirectory = "/run/dsf"
+	SocketDirectory = "/home/michi/work/duet3d/dwc/DSF-APIs/godsfapi/v3"
 	// SocketFile is the default UNIX socket file for DuetControlServer
 	SocketFile = "dcs.sock"
 	// FullSocketPath is the default fully-qualified path to the UNIX socket for DuetControlServer

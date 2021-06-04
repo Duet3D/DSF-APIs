@@ -13,20 +13,21 @@ spec.loader.exec_module(custom_m_codes)
 
 
 def test_custom_m_codes(monkeypatch, tmp_path):
-    mock_dcs_socket_path = os.path.join(tmp_path, "dsf.socket")
+    mock_dcs_socket_file = os.path.join(tmp_path, "dsf.socket")
     monkeypatch.setattr(
         "pydsfapi.connections.InterceptConnection.connect.__defaults__",
-        (mock_dcs_socket_path,),
+        (mock_dcs_socket_file,),
     )
 
     dcs_passed = threading.Event()
 
     def mock_dcs():
         server = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-        server.bind(mock_dcs_socket_path)
+        server.bind(mock_dcs_socket_file)
         server.listen(1)
         conn, _ = server.accept()
-        conn.sendall(b'{"version":11, "id": "foobar"}')
+        print("send all")
+        conn.sendall(b'{"version":11, "id":"foobar"}')
         assert (
             conn.recv(1024) == b"{"
             b'"mode":"Intercept","version":11,"InterceptionMode":"Pre","Channels":["HTTP","Telnet",'
