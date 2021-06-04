@@ -1,4 +1,9 @@
-# Duet Software Framework APIs
+# THIS REPOSITORY IS DEPRECATED!!!
+
+- The go code was moved to https://github.com/Duet3D/dsf-go
+- The python code was moved to https://github.com/Duet3D/dsf-python
+
+## Duet Software Framework APIs
 
 Repository to collect APIs implementations for [Duet Software Framework](https://github.com/Duet3D/DuetSoftwareFramework) (in languages other than DSF which uses C#)
 
