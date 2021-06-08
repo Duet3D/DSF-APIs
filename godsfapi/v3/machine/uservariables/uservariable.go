@@ -1,3 +1,4 @@
+// Deprecated: This package was deprected, please visit https://github.com/Duet3D/dsf-go.
 package uservariables
 
 // UserVariable is a key-value pair for user-defined variables
