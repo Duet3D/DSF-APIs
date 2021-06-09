@@ -1,3 +1,7 @@
+# THIS REPOSITORY IS DEPRECATED!!!
+
+- The python code was moved to https://github.com/Duet3D/dsf-python
+
 # pydsfapi
 Python interface to access DuetSoftwareFramework.
 

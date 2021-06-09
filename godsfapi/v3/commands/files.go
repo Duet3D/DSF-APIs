@@ -1,3 +1,4 @@
+// Deprecated: This package was deprected, please visit https://github.com/Duet3D/dsf-go.
 package commands
 
 // GetFileInfo will initiate analysis of a G-code file and returns

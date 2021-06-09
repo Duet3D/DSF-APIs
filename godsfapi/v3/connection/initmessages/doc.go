@@ -10,4 +10,5 @@ These are
 Even though all types are public it is strongly advised to use the corresponding NewXYZInitMessage()
 functions to get a valid instance of an init message.
 */
+// Deprecated: This package was deprected, please visit https://github.com/Duet3D/dsf-go.
 package initmessages

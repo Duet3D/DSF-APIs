@@ -1,3 +1,4 @@
+// Deprecated: This package was deprected, please visit https://github.com/Duet3D/dsf-go.
 package commands
 
 // InstallPlugin is used to install or upgrade a plugin

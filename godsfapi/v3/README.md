@@ -1,3 +1,7 @@
+# THIS PACKAGE WAS DEPRECATED!!!
+
+- The go code was moved to https://github.com/Duet3D/dsf-go
+
 # godsfapi
 Implementation of DuetAPIClient in Go
 

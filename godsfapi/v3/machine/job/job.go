@@ -1,3 +1,4 @@
+// Deprecated: This package was deprected, please visit https://github.com/Duet3D/dsf-go.
 package job
 
 // Job holds information about the current file job (if any)

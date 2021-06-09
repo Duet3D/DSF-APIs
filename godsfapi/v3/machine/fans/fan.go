@@ -1,3 +1,4 @@
+// Deprecated: This package was deprected, please visit https://github.com/Duet3D/dsf-go.
 package fans
 
 // Fan represents information about an attached fan

@@ -1,3 +1,4 @@
+// Deprecated: This package was deprected, please visit https://github.com/Duet3D/dsf-go.
 package move
 
 import (
