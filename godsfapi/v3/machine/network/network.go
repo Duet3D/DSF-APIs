@@ -1,3 +1,4 @@
+// Deprecated: This package was deprected, please visit https://github.com/Duet3D/dsf-go.
 package network
 
 const (
@@ -25,10 +26,16 @@ type NetworkProtocol string
 const (
 	// HTTP protocol
 	HTTP NetworkProtocol = "http"
+	// HTTPS protocol
+	HTTPS = "https"
 	// FTP protocol
 	FTP = "ftp"
+	// SFTP procotol
+	SFTP = "sftp"
 	// Telnet protocol
 	Telnet = "telnet"
+	// SSH protocol
+	SSH = "ssh"
 )
 
 // Network holds information about the network subsytem
@@ -51,10 +58,12 @@ type NetworkInterface struct {
 	ActualIP string `json:"actualIP"`
 	// ConfiguredIP is the IPv4 address of the network adapter
 	ConfiguredIP string `json:"configuredIP"`
+	// DnsServer configured for IPv4 traffic
+	DnsServer string `json:"dnsServer"`
 	// FirmwareVersion of the network interface (empty for unknonw)
 	// This is primarily intended for the ESP8266-based network interfaces as used on the Duet WiFi
 	FirmwareVersion string `json:"firmwareVersion"`
-	// Gateway address for this network adapter
+	// Gateway address for this network adapter (IPv4)
 	Gateway string `json:"gateway"`
 	// Mac address of the network adapter
 	Mac string `json:"mac"`

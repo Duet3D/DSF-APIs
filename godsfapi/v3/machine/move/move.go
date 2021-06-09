@@ -1,4 +1,7 @@
+// Deprecated: This package was deprected, please visit https://github.com/Duet3D/dsf-go.
 package move
+
+import "github.com/Duet3D/DSF-APIs/godsfapi/v3/types"
 
 // Move holds information about the move subsystem
 type Move struct {
@@ -10,8 +13,6 @@ type Move struct {
 	Compensation MoveCompensation `json:"compensation"`
 	// CurrentMove holds information about the current move
 	CurrentMove CurrentMove `json:"currentMove"`
-	// DAA holds information about the configured Dynamic Acceleration Adjustment
-	DAA DAA `json:"daa"`
 	// Extruders is a list of configured extrudersr
 	Extruders []Extruder `json:"extruders"`
 	// Idle current reduction parameters
@@ -21,6 +22,10 @@ type Move struct {
 	Kinematics Kinematics `json:"kinematics"`
 	// PrintingAcceleration is maximum accelertion allowed while printing (in mm/s^2)
 	PrintingAcceleration float64 `json:"printingAcceleration"`
+	// Queue is a list of move queue items (DDA rings)
+	Queue []MoveQueueItem `json:"queue"`
+	// Shaping are the input shaping parameter
+	Shaping MoveInputShaping `json:"shaping"`
 	// SpeedFactor applied to every move (0.01..1 or greater)
 	SpeedFactor float64 `json:"speedFactor"`
 	// TravelAcceleration is maximum acceleration allowed while travelling (in mm/s^2)
@@ -75,6 +80,43 @@ type MoveDeviations struct {
 	Mean float64 `json:"mean"`
 }
 
+const (
+	DefaultDamping             = 0.2
+	DefaultFrequency           = 40
+	DefaultMinimumAcceleration = 10
+)
+
+// MoveInputShaping describes parameters of input shaping
+type MoveInputShaping struct {
+	// Damping factor
+	Damping float64 `json:"damping"`
+	// Frequency in Hz
+	Frequency float64 `json:"frequency"`
+	// MinimumAcceleration in mm/s
+	MinimumAcceleration float64 `json:"minimumAcceleration"`
+	// Type of configured input shaping
+	Type MoveInputShapingType `json:"type"`
+}
+
+// MoveInputShapingType are the possible input shaping methods
+type MoveInputShapingType string
+
+const (
+	MoveInputShapingTypeNone MoveInputShapingType = "none"
+	ZVD                                           = "ZVD"
+	ZVDD                                          = "ZVDD"
+	EI2                                           = "EI2"
+	DAA                                           = "DAA"
+)
+
+// MoveQueueItem is information about a DDA ring
+type MoveQueueItem struct {
+	// GracePeriod is the minimum idle time in milliseconds before we should start a move
+	GracePeriod uint64 `json:"gracePeriod"`
+	// Length is the maximum number of moves that can be accomodated in the DDA ring
+	Length int64 `json:"length"`
+}
+
 // Default values for Axis
 const (
 	DefaultJerk           = 15.0
@@ -90,8 +132,8 @@ type Axis struct {
 	Babystep float64 `json:"babystep"`
 	// Current of the motor (in mA)
 	Current int64 `json:"current"`
-	// Drivers list of assigned drivers
-	Drivers []string `json:"drivers"`
+	// Drivers is a list of assigned drivers
+	Drivers []types.DriverId `json:"drivers"`
 	// Homed indicates homing status
 	Homed bool `json:"homed"`
 	// Jerk of the motor (in mm/s)
@@ -136,21 +178,6 @@ type CurrentMove struct {
 	TopSpeed float64 `json:"topSpeed"`
 }
 
-// Default values for DAA
-const (
-	DefaultMinimumAcceleration = 10.0
-)
-
-// DAA holds information about Dynamic Acceleration Adjustment
-type DAA struct {
-	// Enabled indicates if DAA is enabled
-	Enabled bool `json:"enabled"`
-	// MinimumAcceleration allowed (in mm/s^2)
-	MinimumAcceleration float64 `json:"minimumAcceleration"`
-	// Period of the ringing that is supposed to be cancelled (in s)
-	Period float64 `json:"period"`
-}
-
 // Default values for Extruder
 const (
 	DefaultMaxExtruderSpeed   = 100.0
@@ -164,7 +191,7 @@ type Extruder struct {
 	// Current of the motor (in mA)
 	Current int64 `json:"current"`
 	// Driver is the assigned driver
-	Driver string `json:"driver"`
+	Driver types.DriverId `json:"driver"`
 	// Filament is the name fo the currently loaded filament
 	Filament string `json:"filament"`
 	// Factor is the extrusion factor (1.0 equals 100%)
@@ -216,20 +243,16 @@ type MotorsIdleControl struct {
 
 // ProbeGrid holds information about the configured probe grid (see M557)
 type ProbeGrid struct {
-	// XMin is the X start coordinate of the heightmap
-	XMin float64 `json:"xMin"`
-	// XMax is the X end coordinate of the heightmap
-	XMax float64 `json:"xMax"`
-	// XSpacing is the spacing between probe points in X direction
-	XSpacing float64 `json:"xSpacing"`
-	// YMin is the Y start coordinate of the heightmap
-	YMin float64 `json:"yMin"`
-	// YMax is the Y end coordinate of the heightmap
-	YMax float64 `json:"yMax"`
-	// YSpacing is the spacing between probe points in Y direction
-	YSpacing float64 `json:"ySpacing"`
+	// Axes are the axis letters of this heightmap
+	Axes []string `json:"axes"`
+	// Maxs are the end coordinates of the heightmap
+	Maxs []float64 `json:"maxs"`
+	// Mins are the start coordinates of the heightmap
+	Mins []float64 `json:"mins"`
 	// Radius is the probing radius on delta kinematics
 	Radius float64 `json:"radius"`
+	// Spacings between coordinates
+	Spacings []float64 `json:"spacings"`
 }
 
 // Skew holds details about orthogonal axis compensation parameters

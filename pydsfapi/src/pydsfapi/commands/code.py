@@ -46,12 +46,13 @@ class KeywordType(IntEnum):
     Else = 3
     While = 4
     Break = 5
-    Return = 6
+    Return = 6  # Deprecated: Was never supported in RRF
     Abort = 7
     Var = 8
     Set = 9
     Echo = 10
     Continue = 11
+    Global = 12
 
 
 keyword_type_names = {

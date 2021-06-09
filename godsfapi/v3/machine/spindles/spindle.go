@@ -1,3 +1,4 @@
+// Deprecated: This package was deprected, please visit https://github.com/Duet3D/dsf-go.
 package spindles
 
 const (
@@ -19,6 +20,20 @@ type Spindle struct {
 	Min float64 `json:"min"`
 	// Max RPM
 	Max float64 `json:"max"`
-	// Tool number mapped to this spindle or -1 if not assigned
-	Tool int64 `json:"tool"`
+	// State is the current state
+	State SpindleState `json:"state"`
 }
+
+// SpindleState are the possible states of a spindle
+type SpindleState string
+
+const (
+	// Unconfigured if the spindle is not configured
+	Unconfigured SpindleState = "unconfigured"
+	// Stopped if the spindle is stopped (inactive)
+	Stopped = "stopped"
+	// Forward if the spindle spins clockwise
+	Forward = "forward"
+	// Reverse if the spindle spins counterclockwise
+	Reverse = "reverse"
+)

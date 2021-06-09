@@ -24,7 +24,7 @@ from typing import Optional
 
 from . import DEFAULT_BACKLOG, FULL_SOCKET_PATH
 from .commands import responses, basecommands, code, result, codechannel
-from .commands.basecommands import MessageType
+from .commands.basecommands import MessageType, LogLevel
 from .initmessages import serverinitmessage, clientinitmessages
 from .http import HttpEndpointUnixSocket
 from .models import MachineModel, ParsedFileInfo
@@ -231,6 +231,10 @@ class BaseCommandConnection(BaseConnection):
         )
         return int(res.result)
 
+    def check_password(self, password: str):
+        """Check the given password (see M551)"""
+        return self.perform_command(basecommands.check_password(password))
+
     def get_file_info(self, file_name: str):
         """Parse a G-code file and returns file information about it"""
         res = self.perform_command(
@@ -394,13 +398,11 @@ class BaseCommandConnection(BaseConnection):
         message_type: MessageType,
         message: str,
         output_message: bool,
-        log_message: bool,
+        log_level: LogLevel,
     ):
         """Write an arbitrary message"""
         res = self.perform_command(
-            basecommands.write_message(
-                message_type, message, output_message, log_message
-            )
+            basecommands.write_message(message_type, message, output_message, log_level)
         )
         return res.result
 
@@ -444,6 +446,10 @@ class InterceptConnection(BaseCommandConnection):
     def receive_code(self) -> code.Code:
         """Wait for a code to be intercepted and read it"""
         return self.receive(code.Code)
+
+    def flush(self):
+        """Wait for all previous codes to finish"""
+        return self.perform_command(basecommands.flush())
 
     def cancel_code(self):
         """Instruct the control server to cancel the last received code (in intercepting mode)"""

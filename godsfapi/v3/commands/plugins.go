@@ -1,3 +1,4 @@
+// Deprecated: This package was deprected, please visit https://github.com/Duet3D/dsf-go.
 package commands
 
 // InstallPlugin is used to install or upgrade a plugin
@@ -18,7 +19,7 @@ func NewInstallPlugin(pluginFile string) *InstallPlugin {
 // PluginControl is used to start/stop/uninstall plugins
 type PluginControl struct {
 	BaseCommand
-	// Plugin is the name of the plugin
+	// Plugin is the identifier of the plugin
 	Plugin string
 }
 
@@ -46,16 +47,17 @@ func NewUninstallPlugin(plugin string) *PluginControl {
 	}
 }
 
-// SetPluginData sets custom plugin data in the object model
+// SetPluginData updates custom plugin data in the object model
 // May be used to update only the own plugin data unless the plugin has the
 // SbcPermissions.ManagePlugins permission.
+// Note that the corresponding key must already exist in the plugin data!
 type SetPluginData struct {
 	BaseCommand
-	// Plugin is the name of the plugin
+	// Plugin is the identifier of the plugin (optional)
 	Plugin string
 	// Key to set
 	Key string
-	// Value to set
+	// Value custom value to set
 	Value string
 }
 
@@ -67,4 +69,19 @@ func NewSetPluginData(plugin, key, value string) *SetPluginData {
 		Key:         key,
 		Value:       value,
 	}
+}
+
+var startPlugins = NewBaseCommand("StartPlugins")
+
+// NewStartPlugins starts all previously started plugins again
+func NewStartPlugins() *BaseCommand {
+	return startPlugins
+}
+
+var stopPlugins = NewBaseCommand("StopPlugins")
+
+// NewStopPlugins returns a command to stop all plugins and save which plugins were running.
+// This command is intended for shutdown or update requests
+func NewStopPlugins() *BaseCommand {
+	return stopPlugins
 }

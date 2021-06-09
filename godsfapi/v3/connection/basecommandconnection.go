@@ -1,3 +1,4 @@
+// Deprecated: This package was deprected, please visit https://github.com/Duet3D/dsf-go.
 package connection
 
 import (
@@ -9,6 +10,7 @@ import (
 	"github.com/Duet3D/DSF-APIs/godsfapi/v3/machine/httpendpoints"
 	"github.com/Duet3D/DSF-APIs/godsfapi/v3/machine/job"
 	"github.com/Duet3D/DSF-APIs/godsfapi/v3/machine/messages"
+	"github.com/Duet3D/DSF-APIs/godsfapi/v3/machine/state"
 	"github.com/Duet3D/DSF-APIs/godsfapi/v3/machine/usersessions"
 	"github.com/Duet3D/DSF-APIs/godsfapi/v3/types"
 )
@@ -45,6 +47,15 @@ func (bcc *BaseCommandConnection) AddUserSession(access usersessions.AccessLevel
 		return -1, err
 	}
 	return r.GetResult().(int), nil
+}
+
+// CheckPassword checks the given password (see M551)
+func (bcc *BaseCommandConnection) CheckPassword(password string) (bool, error) {
+	r, err := bcc.PerformCommand(commands.NewCheckPassword(password))
+	if err != nil {
+		return false, err
+	}
+	return r.IsSuccess(), nil
 }
 
 // RemoveHttpEndpoint removes an existing HTTP endpoint
@@ -251,14 +262,14 @@ func (bcc *BaseCommandConnection) UninstallPlugin(plugin string) error {
 }
 
 // Write an arbitrary generic message
-func (bcc *BaseCommandConnection) WriteTextMessage(mType messages.MessageType, message string, outputMessage, logMessage bool) error {
-	_, err := bcc.PerformCommand(commands.NewWriteMessage(mType, message, outputMessage, logMessage))
+func (bcc *BaseCommandConnection) WriteTextMessage(mType messages.MessageType, message string, outputMessage bool, logLevel *state.LogLevel) error {
+	_, err := bcc.PerformCommand(commands.NewWriteMessage(mType, message, outputMessage, logLevel))
 	return err
 }
 
 // Write an arbitrary generic message from an existing messages.Message instance
-func (bcc *BaseCommandConnection) WriteMessage(message messages.Message, outputMessage, logMessage bool) error {
-	_, err := bcc.PerformCommand(commands.NewWriteMessage(message.Type, message.Content, outputMessage, logMessage))
+func (bcc *BaseCommandConnection) WriteMessage(message messages.Message, outputMessage bool, logLevel *state.LogLevel) error {
+	_, err := bcc.PerformCommand(commands.NewWriteMessage(message.Type, message.Content, outputMessage, logLevel))
 	return err
 }
 

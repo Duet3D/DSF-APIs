@@ -1,9 +1,10 @@
+// Deprecated: This package was deprected, please visit https://github.com/Duet3D/dsf-go.
 package initmessages
 
 const (
 	// ProcotolVersion is the version the server needs to have to be compatible with
 	// this client
-	ProtocolVersion = 10
+	ProtocolVersion = 11
 )
 
 // ServerInitMessage is sent by the server to the client in JSON format once a connection

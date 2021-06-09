@@ -1,3 +1,4 @@
+// Deprecated: This package was deprected, please visit https://github.com/Duet3D/dsf-go.
 package commands
 
 import (
@@ -87,6 +88,7 @@ const (
 	// Break instruction (used in While)
 	Break
 	// Return instruction
+	// Deprecated: was never supported by RRF
 	Return
 	// Abort instruction
 	Abort
@@ -98,6 +100,8 @@ const (
 	Echo
 	// Continue instruction (used in While)
 	Continue
+	// Global operation
+	Global
 )
 
 func (k KeywordType) String() string {

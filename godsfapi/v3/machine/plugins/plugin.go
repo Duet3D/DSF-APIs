@@ -1,24 +1,31 @@
+// Deprecated: This package was deprected, please visit https://github.com/Duet3D/dsf-go.
 package plugins
 
-import "github.com/Duet3D/DSF-APIs/godsfapi/v3/types"
+import (
+	"math"
+	"strings"
+
+	"github.com/Duet3D/DSF-APIs/godsfapi/v3/types"
+)
 
 // Plugin represents a loaded plugin
 type Plugin struct {
-	// DwcFiles is a list of files for DWC
+	// DsfFiles is a list of files for the DSF plugin
+	DsfFiles []string `json:"dsfFiles"`
+	// DwcFiles is a list of files for  the DWC plugin
 	DwcFiles []string `json:"dwcFiles"`
-	// SbcFiles is a list of installed SBC files in the plugin directory
-	SbcFiles []string `json:"sbcFiles"`
-	// RrfFiles is a list of RRF files on the (virtual) SD excluding web files
-	RrfFiles []string `json:"rrfFiles"`
+	// SdFiles is a list of files to be installed to the (virtual) SD excluding web files
+	SdFiles []string `json:"sdFiles"`
 	// Pid is the process ID of the plugin or -1 if not started
-	// This may become 0 when the plugin has been stopped and the application
-	// is being shut down
+	// It is set to 0 while the plugin is being shut down
 	Pid int64 `json:"pid"`
 }
 
 // PluginManifest holds information about the third-party plugin
 type PluginManifest struct {
-	// Name of the plugin
+	// Id is the identifier of this plugin. May consist of letters and digits only (max length 32 chars)
+	Id string `json:"id"`
+	// Name of the plugin. May consist of letters, digits, dashed and underscores only (max length 64 chars)
 	Name string `json:"name"`
 	// Author of the plugin
 	Author string `json:"author"`
@@ -26,27 +33,25 @@ type PluginManifest struct {
 	Version string `json:"version"`
 	// License of the plugin
 	License string `json:"license"`
-	// SourceRepository is a link to the source code repository
-	SourceRepository string `json:"sourceRepository"`
+	// Homepage is a link to the plugin homepage or source code repository
+	Homepage string `json:"homepage"`
 	// DwcVersion is the major/minor compatible DWC version
 	DwcVersion string `json:"dwcVersion"`
 	// DwcDependencies is a list of DWC plugins this plugin depends on.
 	// Circular dependencies are not supported.
 	DwcDependencies []string `json:"dwcDependencies"`
-	// DwcWebpackChunk is the name of the generated webpack chunk
-	DwcWebpackChunk string `json:"dwcWebpackChunk"`
 	// SbcRequired is set to true if a SBC is absolutely required for this plugin
 	SbcRequired bool `json:"sbcRequired"`
 	// SbcDsfVersion is the required DSF version for the plugin running on the SBC
 	// (ignored if there is no SBC executable)
 	SbcDsfVersion string `json:"sbcDsfVersion"`
-	// SbcData is a list of objects holding key-value pairs of a plugin running on the SBC.
-	// May be used to share data between plugins or between the SBC and web interface.
-	SbcData map[string]string `json:"sbcData"`
-	// SbcExecutable is the filename in the bin driectory used to start the plugin.
+	// SbcExecutable is the filename in the DSF directory used to start the plugin.
 	// A plugin may provide different binaries in subdirectories per architecture.
 	// Supported architectures are: arm, arm64, x86, x86_64
 	SbcExecutable string `json:"sbcExecutable"`
+	// SbcExtraExecutables is a list of other filenames in the DSF directory
+	// that should be executable
+	SbcExtraExecutables []string `json:"sbcExtraExecutables"`
 	// SbcExecutableArguments are the command-line arguments for the executable
 	SbcExecutableArguments string `json:"sbcExecutableArguments"`
 	// SbcOutputRedirected defines if messages from stdout/stderr are output as generic messages
@@ -60,4 +65,26 @@ type PluginManifest struct {
 	SbcPluginDependencies []string `json:"sbcPluginDependencies"`
 	// RrfVersion is the major/minore supported RRF version (optional)
 	RrfVersion string `json:"rrfVersion"`
+	// Data is Custom plugin data to be populated in the object model
+	// (DSF/DWC in SBC mode - or - DWC in standalone mode).
+	// Before commands.SetPluginData can be used, corresponding properties must be registered via this property first!
+	Data map[string]string `json:"data"`
+}
+
+// CheckVersion checks if the given version satisfies a required version
+func CheckVersion(actual, required string) bool {
+	if strings.TrimSpace(required) != "" {
+		actualItems := strings.FieldsFunc(actual, func(r rune) bool {
+			return r == '.' || r == '-' || r == '+'
+		})
+		requiredItems := strings.FieldsFunc(required, func(r rune) bool {
+			return r == '.' || r == '-' || r == '+'
+		})
+		for i := 0; i < int(math.Min(float64(len(actualItems)), float64(len(requiredItems)))); i++ {
+			if actualItems[i] != requiredItems[i] {
+				return false
+			}
+		}
+	}
+	return true
 }

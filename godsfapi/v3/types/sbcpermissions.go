@@ -1,61 +1,65 @@
+// Deprecated: This package was deprected, please visit https://github.com/Duet3D/dsf-go.
 package types
 
-type SbcPermissions string
+type SbcPermissions uint64
 
 const (
 	// None for no permissions set (default value)
-	None SbcPermissions = "none"
+	None SbcPermissions = 1 << iota
 	// CommandExecution to execute generic commands
-	CommandExecution = "commandExecution"
-	// CodeInterceptionRead to intercept codes in a non-blocking way
-	CodeInterceptionRead = "codeInterceptionRead"
+	CommandExecution
+	// CodeInterceptionRead to intercept codes but don't interact with them
+	CodeInterceptionRead
 	// CodeInterceptionReadWrite to intercept codes in a blocking way
 	// with options to resolve or cancel them
-	CodeInterceptionReadWrite = "codeInterceptionReadWrite"
-	// ManagePlugins to install, load, unload and uninstall plugins
-	ManagePlugins = "managePlugins"
+	CodeInterceptionReadWrite
+	// ManagePlugins to install, load, unload and uninstall plugins.
+	// Grants FS access to all third-party plugins, too.
+	ManagePlugins
+	// ServicePlugins runtime information (for internal purposes only, do not use)
+	ServicePlugins
 	// ManageUserSession to manage user sessions
-	ManageUserSession = "manageUserSessions"
+	ManageUserSession
 	// ObjectModelRead to read from the object model
-	ObjectModelRead = "objectModelRead"
+	ObjectModelRead
 	// ObjectModelReadWrite to read from and write to the object model
-	ObjectModelReadWrite = "objectModelReadWrite"
+	ObjectModelReadWrite
 	// RegisterHttpEndpoints to create new HTTP endpoints
-	RegisterHttpEndpoints = "registerHttpEndpoints"
+	RegisterHttpEndpoints
 	// ReadFilaments to read files in 0:/filaments
-	ReadFilaments = "readFilaments"
+	ReadFilaments
 	// WriteFilaments to write files in 0:/filaments
-	WriteFilaments = "writeFilaments"
+	WriteFilaments
 	// ReadFirmware to read files in 0:/firmware
-	ReadFirmware = "readFirmware"
+	ReadFirmware
 	// WriteFirmware to write files in 0:/firmware
-	WriteFirmware = "writeFirmware"
+	WriteFirmware
 	// ReadGCodes to read files in 0:/gcodes
-	ReadGCodes = "readGCodes"
+	ReadGCodes
 	// WriteGCodes to write files in 0:/gcodes
-	WriteGCodes = "writeGCodes"
+	WriteGCodes
 	// ReadMacros to read files in 0:/macros
-	ReadMacros = "readMacros"
+	ReadMacros
 	// WriteMacros to write files in 0:/macros
-	WriteMacros = "writeMacros"
+	WriteMacros
 	// ReadMenu to read files in 0:/menu
-	ReadMenu = "readMenu"
+	ReadMenu
 	// WriteMenu to write files in 0:/menu
-	WriteMenu = "WriteMenu"
+	WriteMenu
 	// ReadSystem to read files in 0:/sys
-	ReadSystem = "readSystem"
+	ReadSystem
 	// WriteSystem to write files in 0:/sys
-	WriteSystem = "writeSystem"
+	WriteSystem
 	// ReadWeb to read files in 0:/www
-	ReadWeb = "readWeb"
+	ReadWeb
 	// WriteWeb to write files in 0:/www
-	WriteWeb = "writeWeb"
-	// FileSystemAccess to access files outside the virtual SD directory (as DSF user)
-	FileSystemAccess = "fileSystemAccess"
+	WriteWeb
+	// FileSystemAccess to access files including all subdirectories of the virtual SD directory as DSF user
+	FileSystemAccess
 	// LaunchProcess to launch new processes
-	LaunchProcess = "launchProcess"
+	LaunchProcess
 	// NetworkAccess to communicat over network (stand-alone)
-	NetworkAccess = "networkAccess"
+	NetworkAccess
 	// SuperUser to launch processes as root user (for full device control - potentially dangerous)
-	SuperUser = "superUser"
+	SuperUser
 )

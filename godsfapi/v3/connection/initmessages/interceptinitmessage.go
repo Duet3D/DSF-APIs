@@ -1,3 +1,4 @@
+// Deprecated: This package was deprected, please visit https://github.com/Duet3D/dsf-go.
 package initmessages
 
 import "github.com/Duet3D/DSF-APIs/godsfapi/v3/types"

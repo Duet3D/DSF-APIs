@@ -1,3 +1,4 @@
+// Deprecated: This package was deprected, please visit https://github.com/Duet3D/dsf-go.
 package main
 
 import (
@@ -112,7 +113,7 @@ func intercept() {
 		}
 		if c.Type == commands.MCode && c.IsMajorNumber(1234) {
 
-			success, err := ic.Flush(c.Channel)
+			success, err := ic.Flush()
 			if err != nil {
 				log.Panic(err)
 			}

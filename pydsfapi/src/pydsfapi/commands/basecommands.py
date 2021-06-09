@@ -59,6 +59,15 @@ class MessageType(IntEnum):
     Error = 2
 
 
+class LogLevel(str, Enum):
+    """Configured log level"""
+
+    Debug = "debug"
+    Info = "info"
+    Warn = "warn"
+    Off = "off"
+
+
 class BaseCommand:
     """Base class of a command."""
 
@@ -161,6 +170,16 @@ def remove_http_endpoint(endpoint_type: HttpEndpointType, namespace: str, path: 
         "RemoveHttpEndpoint",
         **{"EndpointType": endpoint_type, "Namespace": namespace, "Path": path},
     )
+
+
+def check_password(password: str):
+    """
+    Check if the given password is correct and matches the previously set value from M551.
+    If no password was configured before or if it was set to "reprap", this will always return true
+    """
+    if not isinstance(password, str) or not password:
+        raise TypeError("password must be a string")
+    return BaseCommand("CheckPassword", **{"Password": password})
 
 
 def add_user_session(
@@ -329,7 +348,10 @@ def uninstall_plugin(plugin: str):
 
 
 def write_message(
-    message_type: MessageType, content: str, output_message: bool, log_message: bool
+    message_type: MessageType,
+    content: str,
+    output_message: bool,
+    log_level: Optional[LogLevel],
 ):
     """
     Write an arbitrary generic message
@@ -340,15 +362,15 @@ def write_message(
         raise TypeError("content must be a string")
     if not isinstance(output_message, bool):
         raise TypeError("output_message must be a bool")
-    if not isinstance(log_message, bool):
-        raise TypeError("log_message must be a bool")
+    if log_level is not None and not isinstance(log_level, LogLevel):
+        raise TypeError("log_message must be a LogLevel")
     return BaseCommand(
         "WriteMessage",
         **{
             "Type": message_type,
             "Content": content,
             "OutputMessage": output_message,
-            "LogMessage": log_message,
+            "LogLevel": log_level,
         },
     )
 
